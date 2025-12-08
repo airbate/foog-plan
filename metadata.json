@@ -1,0 +1,7 @@
+{
+  "name": "Copy of NutriGuard AI",
+  "description": "Personalized AI diet risk analyzer using computer vision to assess food safety based on health conditions like diabetes and hypertension.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
