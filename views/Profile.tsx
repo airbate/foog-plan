@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { UserProfile, ConditionId, Language } from '../types';
 import { saveProfile } from '../services/storage';
-import { UserIcon, ChevronRightIcon, CheckIcon } from '../components/Icons';
+import { UserIcon, ChevronRightIcon, CheckIcon, FileTextIcon, SparklesIcon } from '../components/Icons';
 import { DIET_RULES_MAP, HEALTH_CATEGORIES, ALL_CONDITIONS } from '../services/dietRules';
+import { generateDietPlan } from '../services/gemini';
 import { t } from '../services/i18n';
 
 interface ProfileProps {
@@ -13,6 +14,7 @@ interface ProfileProps {
 export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
   const [editing, setEditing] = useState(false);
   const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({});
+  const [generatingPlan, setGeneratingPlan] = useState(false);
 
   const lang = profile.language;
 
@@ -36,6 +38,22 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
       const updated = { ...profile, language: l };
       saveProfile(updated);
       onUpdate(updated);
+  }
+
+  const handleGeneratePlan = async () => {
+      if (profile.conditions.length === 0) return;
+      
+      setGeneratingPlan(true);
+      try {
+          const plan = await generateDietPlan(profile.conditions, lang);
+          const updated = { ...profile, dietPlan: plan };
+          saveProfile(updated);
+          onUpdate(updated);
+      } catch (e) {
+          alert("Failed to generate plan. Please try again.");
+      } finally {
+          setGeneratingPlan(false);
+      }
   }
 
   return (
@@ -121,6 +139,78 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
           </div>
       ) : (
         <>
+            {/* AI Care Plan Section */}
+            <div className="mb-8">
+                <div className="flex items-center justify-between mb-4 px-1">
+                     <h3 className="text-lg font-bold text-gray-800 flex items-center">
+                        <FileTextIcon className="w-5 h-5 mr-2 text-emerald-600" />
+                        {t('plan_title', lang)}
+                     </h3>
+                     {profile.dietPlan && !generatingPlan && (
+                         <button onClick={handleGeneratePlan} className="text-xs font-medium text-gray-400 hover:text-emerald-600 flex items-center">
+                            <SparklesIcon className="w-3 h-3 mr-1" />
+                            {t('btn_regenerate_plan', lang)}
+                         </button>
+                     )}
+                </div>
+
+                {!profile.dietPlan ? (
+                    <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 text-center border border-emerald-100 shadow-sm">
+                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
+                            <SparklesIcon className="w-6 h-6 text-emerald-500" />
+                        </div>
+                        <p className="text-sm text-gray-600 mb-4 px-4">Generate a comprehensive diet and lifestyle plan tailored to your conditions.</p>
+                        <button 
+                            onClick={handleGeneratePlan}
+                            disabled={generatingPlan || profile.conditions.length === 0}
+                            className="bg-emerald-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all w-full"
+                        >
+                            {generatingPlan ? t('plan_generating', lang) : t('btn_generate_plan', lang)}
+                        </button>
+                        {profile.conditions.length === 0 && (
+                            <p className="text-xs text-red-400 mt-2">Please select conditions first.</p>
+                        )}
+                    </div>
+                ) : (
+                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div className="p-4 border-b border-gray-50">
+                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{t('plan_summary', lang)}</h4>
+                             <p className="text-sm text-gray-700 leading-relaxed font-medium">{profile.dietPlan.summary}</p>
+                        </div>
+                        
+                        {/* Meal Plan */}
+                        <div className="p-4 border-b border-gray-50 bg-gray-50/50">
+                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{t('plan_meals', lang)}</h4>
+                            <div className="space-y-3">
+                                <MealItem label={t('meal_breakfast', lang)} text={profile.dietPlan.meals.breakfast} />
+                                <MealItem label={t('meal_lunch', lang)} text={profile.dietPlan.meals.lunch} />
+                                <MealItem label={t('meal_dinner', lang)} text={profile.dietPlan.meals.dinner} />
+                                <MealItem label={t('meal_snack', lang)} text={profile.dietPlan.meals.snacks} />
+                            </div>
+                        </div>
+
+                        {/* Tips */}
+                        <div className="p-4">
+                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{t('plan_tips', lang)}</h4>
+                            <ul className="space-y-2">
+                                {profile.dietPlan.guidelines.map((tip, i) => (
+                                    <li key={`guide-${i}`} className="flex items-start text-sm text-gray-600">
+                                        <span className="mr-2 mt-1.5 w-1.5 h-1.5 bg-emerald-400 rounded-full flex-shrink-0"></span>
+                                        {tip}
+                                    </li>
+                                ))}
+                                {profile.dietPlan.lifestyle.map((tip, i) => (
+                                    <li key={`life-${i}`} className="flex items-start text-sm text-gray-600">
+                                        <span className="mr-2 mt-1.5 w-1.5 h-1.5 bg-blue-400 rounded-full flex-shrink-0"></span>
+                                        {tip}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </div>
+                )}
+            </div>
+
             <h3 className="text-lg font-bold text-gray-800 mb-4 px-1">{t('active_guidelines', lang)}</h3>
             {profile.conditions.length === 0 ? (
                 <div className="p-6 text-center text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-300">
@@ -180,3 +270,10 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
     </div>
   );
 };
+
+const MealItem = ({label, text}: {label: string, text: string}) => (
+    <div className="flex flex-col sm:flex-row sm:items-baseline">
+        <span className="text-xs font-bold text-gray-500 w-20 flex-shrink-0">{label}</span>
+        <span className="text-sm text-gray-800">{text}</span>
+    </div>
+);

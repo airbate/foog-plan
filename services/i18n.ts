@@ -30,6 +30,7 @@ export const TRANSLATIONS = {
     section_detailed: "Detailed Analysis",
     section_recommendation: "Recommendation",
     section_alternative: "Better Alternative",
+    smart_swaps: "Smart Swaps",
     
     // History
     history_title: "History",
@@ -49,6 +50,19 @@ export const TRANSLATIONS = {
     guideline_good: "Good",
     disclaimer_title: "Medical Disclaimer",
     disclaimer_text: "NutriGuard AI is an experimental tool. This information is for educational purposes only and not a substitute for professional medical advice, diagnosis, or treatment.",
+    
+    // Plan
+    plan_title: "Personalized Treatment Plan",
+    btn_generate_plan: "Generate AI Diet Plan",
+    btn_regenerate_plan: "Regenerate Plan",
+    plan_generating: "Designing your plan...",
+    plan_summary: "Strategy",
+    plan_meals: "1-Day Sample Menu",
+    plan_tips: "Lifestyle & Guidelines",
+    meal_breakfast: "Breakfast",
+    meal_lunch: "Lunch",
+    meal_dinner: "Dinner",
+    meal_snack: "Snacks",
     
     // Nutrients
     nut_calories: "Calories",
@@ -93,6 +107,7 @@ export const TRANSLATIONS = {
     section_detailed: "详细分析",
     section_recommendation: "饮食建议",
     section_alternative: "更佳替代方案",
+    smart_swaps: "智能替代推荐",
     
     // History
     history_title: "历史记录",
@@ -112,6 +127,19 @@ export const TRANSLATIONS = {
     guideline_good: "推荐食用",
     disclaimer_title: "免责声明",
     disclaimer_text: "本应用是基于人工智能的实验性工具。所有信息仅供参考，不能替代专业医生的诊断和治疗建议。饮食调整请遵医嘱。",
+    
+    // Plan
+    plan_title: "个性化治疗方案",
+    btn_generate_plan: "生成 AI 饮食方案",
+    btn_regenerate_plan: "重新生成",
+    plan_generating: "正在为您规划方案...",
+    plan_summary: "核心策略",
+    plan_meals: "一日参考食谱",
+    plan_tips: "生活指南",
+    meal_breakfast: "早餐",
+    meal_lunch: "午餐",
+    meal_dinner: "晚餐",
+    meal_snack: "加餐",
     
     // Nutrients
     nut_calories: "热量",

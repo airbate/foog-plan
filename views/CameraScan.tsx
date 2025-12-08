@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import { analyzeFoodImage } from '../services/gemini';
 import { UserProfile, AnalysisResult, RiskLevel, ScanRecord } from '../types';
 import { saveScan } from '../services/storage';
-import { AlertTriangleIcon, CheckIcon } from '../components/Icons';
+import { AlertTriangleIcon, CheckIcon, InfoIcon, SparklesIcon } from '../components/Icons';
 import { t } from '../services/i18n';
 
 interface CameraScanProps {
@@ -17,6 +17,7 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
   const [analyzing, setAnalyzing] = useState(false);
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [nutrientMode, setNutrientMode] = useState<'amount' | 'percent'>('amount');
 
   const lang = userProfile.language;
 
@@ -98,15 +99,27 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
                 </div>
             </div>
 
-            {/* Triggered Conditions */}
+            {/* Triggered Conditions - Visually Distinct Highlight */}
             {result.riskLevel !== RiskLevel.SAFE && result.triggeredConditions && result.triggeredConditions.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-black/5">
-                    <p className="text-xs font-bold uppercase mb-2 opacity-70">{t('triggered_by', lang)}</p>
+                <div className="mt-4 pt-4 border-t border-black/10">
+                    <p className="text-xs font-bold uppercase mb-2 opacity-90 flex items-center tracking-wider">
+                        <AlertTriangleIcon className="w-4 h-4 mr-1.5" />
+                        {t('triggered_by', lang)}
+                    </p>
                     <div className="flex flex-wrap gap-2">
                         {result.triggeredConditions.map((cond, idx) => (
-                            <span key={idx} className="px-2 py-1 bg-white/60 rounded-md text-xs font-bold shadow-sm">
-                                {cond}
-                            </span>
+                            <div key={idx} className={`px-3 py-2 rounded-lg shadow-sm border flex items-center ${
+                                result.riskLevel === RiskLevel.RISKY 
+                                ? 'bg-white text-red-700 border-red-200 ring-1 ring-red-200' 
+                                : 'bg-white text-yellow-800 border-yellow-200 ring-1 ring-yellow-200'
+                            }`}>
+                                <span className={`w-2 h-2 rounded-full mr-2 ${
+                                    result.riskLevel === RiskLevel.RISKY ? 'bg-red-500' : 'bg-yellow-500'
+                                }`}></span>
+                                <span className="text-sm font-extrabold">
+                                    {cond}
+                                </span>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -128,24 +141,93 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
                     {result.portionRecommendation}
                 </p>
             </div>
-            {result.alternativeSuggestion && (
-                 <div>
-                    <h3 className="text-sm font-bold text-gray-400 uppercase mb-1">{t('section_alternative', lang)}</h3>
-                    <p className="text-blue-600 font-medium">{result.alternativeSuggestion}</p>
-                </div>
-            )}
         </div>
 
-        {/* Nutrition Grid */}
+        {/* Smart Alternatives Card */}
+        {result.alternatives && result.alternatives.length > 0 && (
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl shadow-sm border border-blue-100 p-5 mb-6">
+                <div className="flex items-center mb-3">
+                    <div className="bg-blue-100 p-1.5 rounded-full mr-2">
+                        <SparklesIcon className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <h3 className="text-sm font-bold text-blue-800 uppercase">{t('smart_swaps', lang)}</h3>
+                </div>
+                <div className="space-y-3">
+                    {result.alternatives.map((alt, index) => (
+                        <div key={index} className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm">
+                            <p className="font-bold text-gray-800 text-sm">{alt.name}</p>
+                            <p className="text-xs text-gray-500 mt-1">{alt.reason}</p>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        )}
+
+        {/* Nutrition Grid - Interactive */}
         <div className="mb-6">
-            <h3 className="text-sm font-bold text-gray-800 mb-3 ml-1">Nutritional Estimate (Approx.)</h3>
+            <div className="flex justify-between items-center mb-3 px-1">
+                <h3 className="text-sm font-bold text-gray-800">Nutritional Estimate</h3>
+                <div className="flex bg-gray-100 p-1 rounded-lg border border-gray-200">
+                     <button
+                        onClick={() => setNutrientMode('amount')}
+                        className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${nutrientMode === 'amount' ? 'bg-white shadow-sm text-black' : 'text-gray-400 hover:text-gray-600'}`}
+                     >
+                        Unit
+                     </button>
+                     <button
+                        onClick={() => setNutrientMode('percent')}
+                        className={`px-3 py-1 text-[10px] font-bold rounded-md transition-all ${nutrientMode === 'percent' ? 'bg-white shadow-sm text-emerald-600' : 'text-gray-400 hover:text-gray-600'}`}
+                     >
+                        % DV
+                     </button>
+                </div>
+            </div>
+            
             <div className="grid grid-cols-2 gap-3">
-                <NutrientCard label={t('nut_calories', lang)} value={result.nutrients.calories} unit="kcal" max={2000} />
-                <NutrientCard label={t('nut_carbs', lang)} value={result.nutrients.carbs} unit="g" max={275} />
-                <NutrientCard label={t('nut_protein', lang)} value={result.nutrients.protein} unit="g" max={50} />
-                <NutrientCard label={t('nut_fat', lang)} value={result.nutrients.fat} unit="g" max={78} />
-                <NutrientCard label={t('nut_sugar', lang)} value={result.nutrients.sugar} unit="g" max={50} highlight={result.riskLevel !== RiskLevel.SAFE && result.nutrients.sugar > 10} />
-                <NutrientCard label={t('nut_sodium', lang)} value={result.nutrients.sodium} unit="mg" max={2300} highlight={result.riskLevel !== RiskLevel.SAFE && result.nutrients.sodium > 400} />
+                <NutrientCard 
+                    label={t('nut_calories', lang)} 
+                    value={result.nutrients.calories} 
+                    unit="kcal" 
+                    max={2000} 
+                    viewMode={nutrientMode}
+                />
+                <NutrientCard 
+                    label={t('nut_carbs', lang)} 
+                    value={result.nutrients.carbs} 
+                    unit="g" 
+                    max={275} 
+                    viewMode={nutrientMode}
+                />
+                <NutrientCard 
+                    label={t('nut_protein', lang)} 
+                    value={result.nutrients.protein} 
+                    unit="g" 
+                    max={50} 
+                    viewMode={nutrientMode}
+                />
+                <NutrientCard 
+                    label={t('nut_fat', lang)} 
+                    value={result.nutrients.fat} 
+                    unit="g" 
+                    max={78} 
+                    viewMode={nutrientMode}
+                />
+                <NutrientCard 
+                    label={t('nut_sugar', lang)} 
+                    value={result.nutrients.sugar} 
+                    unit="g" 
+                    max={50} 
+                    highlight={result.riskLevel !== RiskLevel.SAFE && result.nutrients.sugar > 10} 
+                    viewMode={nutrientMode}
+                />
+                <NutrientCard 
+                    label={t('nut_sodium', lang)} 
+                    value={result.nutrients.sodium} 
+                    unit="mg" 
+                    max={2300} 
+                    highlight={result.riskLevel !== RiskLevel.SAFE && result.nutrients.sodium > 400} 
+                    viewMode={nutrientMode}
+                />
             </div>
             <p className="text-[10px] text-gray-400 mt-2 text-right">{t('dv_note', lang)}</p>
         </div>
@@ -220,23 +302,28 @@ interface NutrientCardProps {
     unit: string;
     max: number; // Daily Value max
     highlight?: boolean;
+    viewMode: 'amount' | 'percent';
 }
 
-const NutrientCard = ({ label, value, unit, max, highlight = false }: NutrientCardProps) => {
+const NutrientCard = ({ label, value, unit, max, highlight = false, viewMode }: NutrientCardProps) => {
     const percentage = Math.min(100, Math.round((value / max) * 100));
-    
-    // Color logic: if highlight is true OR high percentage of a "limit" nutrient, warn user
-    // Simple logic: Green if low %, Yellow/Red if high % for nutrients typically limited (Fat, Sodium, Sugar)
-    // For Protein/Carbs, usually high is okay, but context matters.
-    // Here we use simple blue/green, unless highlighted by parent component logic.
-    
     const barColor = highlight ? 'bg-red-500' : (percentage > 50 ? 'bg-blue-500' : 'bg-emerald-500');
 
+    // Display Logic
+    const mainValue = viewMode === 'amount' ? `${value}` : `${percentage}%`;
+    const mainUnit = viewMode === 'amount' ? unit : '';
+    const subText = viewMode === 'amount' 
+        ? `${percentage}% DV` 
+        : `${value}${unit} / ${max}${unit}`;
+
     return (
-        <div className={`p-3 rounded-lg ${highlight ? 'bg-red-50 border border-red-100' : 'bg-gray-50 border border-gray-100'}`}>
+        <div className={`p-3 rounded-lg w-full transition-all ${highlight ? 'bg-red-50 border border-red-100' : 'bg-gray-50 border border-gray-100 hover:border-emerald-200'}`}>
             <div className="flex justify-between items-end mb-1">
                 <p className={`text-xs font-bold uppercase ${highlight ? 'text-red-600' : 'text-gray-400'}`}>{label}</p>
-                <p className="text-sm font-bold text-gray-800">{value}<span className="text-[10px] font-normal text-gray-500 ml-0.5">{unit}</span></p>
+                <p className="text-sm font-bold text-gray-800">
+                    {mainValue}
+                    <span className="text-[10px] font-normal text-gray-500 ml-0.5">{mainUnit}</span>
+                </p>
             </div>
             
             {/* Progress Bar */}
@@ -246,7 +333,10 @@ const NutrientCard = ({ label, value, unit, max, highlight = false }: NutrientCa
                     style={{ width: `${percentage}%` }}
                 ></div>
             </div>
-            <p className="text-[9px] text-right text-gray-400 mt-1">{percentage}% DV</p>
+            
+            <p className="text-[9px] text-right text-gray-400 mt-1 h-3 font-medium">
+                {subText}
+            </p>
         </div>
     );
 };

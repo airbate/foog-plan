@@ -17,6 +17,11 @@ export interface NutrientInfo {
   sodium: number; // mg
 }
 
+export interface AlternativeFood {
+  name: string;
+  reason: string;
+}
+
 export interface AnalysisResult {
   foodName: string;
   riskLevel: RiskLevel;
@@ -24,7 +29,8 @@ export interface AnalysisResult {
   triggeredConditions: string[]; // Specific conditions that caused the risk
   detailedAnalysis: string; // Paragraph explanation
   portionRecommendation: string; // e.g. "Limit to 100g"
-  alternativeSuggestion?: string; // e.g. "Try grilled chicken instead"
+  alternativeSuggestion?: string; // Legacy string field
+  alternatives?: AlternativeFood[]; // New structured alternatives
   nutrients: NutrientInfo;
 }
 
@@ -35,12 +41,28 @@ export interface ScanRecord {
   result: AnalysisResult;
 }
 
+export interface DailyMealPlan {
+  breakfast: string;
+  lunch: string;
+  dinner: string;
+  snacks: string;
+}
+
+export interface AiDietPlan {
+  summary: string; // High level strategy
+  meals: DailyMealPlan;
+  guidelines: string[]; // Key dos and don'ts combined
+  lifestyle: string[]; // Exercise, sleep, hydration tips
+  generatedAt: number;
+}
+
 export interface UserProfile {
   id: string;
   name: string;
   conditions: ConditionId[]; // Array of strings (e.g., 'diabetes_t2', 'gout')
   onboarded: boolean;
   language: Language;
+  dietPlan?: AiDietPlan; // New field for the generated plan
 }
 
 // Hierarchical Data Structures

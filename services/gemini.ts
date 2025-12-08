@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { AnalysisResult, RiskLevel, ConditionId, Language } from '../types';
+import { AnalysisResult, RiskLevel, ConditionId, Language, AiDietPlan } from '../types';
 import { getDietRulesForConditions, ALL_CONDITIONS } from './dietRules';
 
 // NOTE: In a production app, the API key should be proxy-ed through a backend.
@@ -46,7 +46,10 @@ export const analyzeFoodImage = async (
     3. Identify EXACTLY which of the user's conditions caused the risk (if any).
     4. Estimate nutritional content for a standard serving.
     5. Provide specific eating advice (portion control, what to pair it with).
-    6. Suggest a healthier alternative if risky.
+    6. Suggest 2-3 SPECIFIC healthier food alternatives/swaps.
+       - If RISKY/MODERATE: Suggest foods that are safer replacements.
+       - If SAFE: Suggest ways to make it even healthier or similar healthy options.
+       - IMPORTANT: Suggested alternatives MUST be common, affordable, and easily accessible ingredients found in standard grocery stores. Avoid rare or exotic foods.
 
     Be conservative with health advice. If the image is unclear or not food, mark as UNKNOWN.
     ${langInstruction}
@@ -81,7 +84,18 @@ export const analyzeFoodImage = async (
             },
             detailedAnalysis: { type: Type.STRING, description: "A helpful paragraph explaining why this is good or bad given the specific diseases." },
             portionRecommendation: { type: Type.STRING, description: "Specific quantity advice e.g. '1/2 cup max'." },
-            alternativeSuggestion: { type: Type.STRING, description: "A similar but healthier food choice." },
+            alternatives: {
+                type: Type.ARRAY,
+                items: {
+                    type: Type.OBJECT,
+                    properties: {
+                        name: { type: Type.STRING, description: "Name of the alternative food." },
+                        reason: { type: Type.STRING, description: "Why this is a better choice for the user's conditions." }
+                    },
+                    required: ["name", "reason"]
+                },
+                description: "List of 2-3 specific healthier alternative food options."
+            },
             nutrients: {
               type: Type.OBJECT,
               properties: {
@@ -95,7 +109,7 @@ export const analyzeFoodImage = async (
               required: ["calories", "carbs", "protein", "fat", "sugar", "sodium"]
             }
           },
-          required: ["foodName", "riskLevel", "riskReason", "triggeredConditions", "detailedAnalysis", "portionRecommendation", "nutrients"]
+          required: ["foodName", "riskLevel", "riskReason", "triggeredConditions", "detailedAnalysis", "portionRecommendation", "alternatives", "nutrients"]
         }
       }
     });
@@ -134,3 +148,88 @@ export const analyzeFoodImage = async (
     };
   }
 };
+
+export const generateDietPlan = async (
+  conditionIds: ConditionId[],
+  language: Language
+): Promise<AiDietPlan> => {
+  if (!apiKey) {
+    throw new Error("API Key is missing.");
+  }
+
+  const model = "gemini-2.5-flash";
+
+  const conditionNames = conditionIds.map(id => {
+    const found = ALL_CONDITIONS.find(c => c.id === id);
+    return found ? found.name : id;
+  }).join(", ");
+
+  const langInstruction = language === 'zh' 
+    ? "OUTPUT MUST BE IN SIMPLIFIED CHINESE (中文)." 
+    : "OUTPUT MUST BE IN ENGLISH.";
+
+  const prompt = `
+    You are an expert Clinical Dietitian.
+    Create a personalized "Care Plan" for a user with the following conditions: ${conditionNames}.
+    
+    The plan must be holistic, safe, and address all the conditions simultaneously.
+
+    CRITICAL INSTRUCTION FOR INGREDIENTS:
+    - Use only COMMON, EASILY ACCESSIBLE ingredients found in standard local grocery stores.
+    - Avoid rare, exotic, or expensive ingredients.
+    - Focus on affordable, everyday foods that are easy to prepare.
+    - If suggesting specific dishes, ensure the main components are widely available.
+    
+    Output structured data with:
+    1. A summary strategy (2 sentences).
+    2. A sample 1-day meal plan (Breakfast, Lunch, Dinner, 1 Snack).
+    3. 4-5 Key Dietary Guidelines (Do's and Don'ts mixed).
+    4. 3 Lifestyle tips (exercise, sleep, hydration, etc).
+
+    ${langInstruction}
+  `;
+
+  const response = await ai.models.generateContent({
+      model: model,
+      contents: { parts: [{ text: prompt }] },
+      config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+              type: Type.OBJECT,
+              properties: {
+                  summary: { type: Type.STRING },
+                  meals: {
+                      type: Type.OBJECT,
+                      properties: {
+                          breakfast: { type: Type.STRING },
+                          lunch: { type: Type.STRING },
+                          dinner: { type: Type.STRING },
+                          snacks: { type: Type.STRING }
+                      },
+                      required: ["breakfast", "lunch", "dinner", "snacks"]
+                  },
+                  guidelines: { 
+                      type: Type.ARRAY, 
+                      items: { type: Type.STRING }
+                  },
+                  lifestyle: {
+                      type: Type.ARRAY,
+                      items: { type: Type.STRING }
+                  }
+              },
+              required: ["summary", "meals", "guidelines", "lifestyle"]
+          }
+      }
+  });
+
+  if (!response.text) {
+      throw new Error("Failed to generate plan");
+  }
+
+  const data = JSON.parse(response.text);
+  
+  return {
+      ...data,
+      generatedAt: Date.now()
+  };
+}
