@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { UserProfile, ConditionId, Language } from '../types';
 import { saveProfile } from '../services/storage';
-import { UserIcon, ChevronRightIcon, CheckIcon, FileTextIcon, SparklesIcon } from '../components/Icons';
+import { UserIcon, ChevronRightIcon, CheckIcon, FileTextIcon, SparklesIcon, TrashIcon } from '../components/Icons';
 import { DIET_RULES_MAP, HEALTH_CATEGORIES, ALL_CONDITIONS } from '../services/dietRules';
 import { generateDietPlan } from '../services/gemini';
 import { t } from '../services/i18n';
@@ -15,6 +15,7 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
   const [editing, setEditing] = useState(false);
   const [expandedCats, setExpandedCats] = useState<Record<string, boolean>>({});
   const [generatingPlan, setGeneratingPlan] = useState(false);
+  const [customInput, setCustomInput] = useState("");
 
   const lang = profile.language;
 
@@ -26,6 +27,23 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
       newConditions.push(id);
     }
     const updated = { ...profile, conditions: newConditions };
+    saveProfile(updated);
+    onUpdate(updated);
+  };
+
+  const addCustomCondition = () => {
+    const trimmed = customInput.trim();
+    if (!trimmed) return;
+    if (!profile.conditions.includes(trimmed)) {
+        const updated = { ...profile, conditions: [...profile.conditions, trimmed] };
+        saveProfile(updated);
+        onUpdate(updated);
+    }
+    setCustomInput("");
+  };
+
+  const removeCustomCondition = (id: string) => {
+    const updated = { ...profile, conditions: profile.conditions.filter(c => c !== id) };
     saveProfile(updated);
     onUpdate(updated);
   };
@@ -55,6 +73,9 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
           setGeneratingPlan(false);
       }
   }
+
+  // Identify custom conditions (those not in ALL_CONDITIONS)
+  const customConditions = profile.conditions.filter(id => !ALL_CONDITIONS.some(c => c.id === id));
 
   return (
     <div className="p-4 pb-20">
@@ -136,6 +157,41 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
                     </div>
                 )
               })}
+
+              {/* Custom Conditions Editor */}
+               <div className="border border-blue-100 rounded-xl overflow-hidden bg-blue-50/50">
+                    <div className="p-4">
+                        <h3 className="text-sm font-bold text-blue-800 mb-3">{t('custom_condition_title', lang)}</h3>
+                        
+                        <div className="flex flex-wrap gap-2 mb-3">
+                            {customConditions.map((cond, idx) => (
+                                <div key={idx} className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center shadow-sm">
+                                    <span className="mr-2">{cond}</span>
+                                    <button onClick={() => removeCustomCondition(cond)} className="text-blue-400 hover:text-blue-600">
+                                        <TrashIcon className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex gap-2">
+                            <input 
+                                type="text" 
+                                value={customInput}
+                                onChange={(e) => setCustomInput(e.target.value)}
+                                placeholder={t('custom_input_placeholder', lang)}
+                                className="flex-1 border border-blue-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                            />
+                            <button 
+                                onClick={addCustomCondition}
+                                disabled={!customInput.trim()}
+                                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                {t('btn_add', lang)}
+                            </button>
+                        </div>
+                    </div>
+                </div>
           </div>
       ) : (
         <>
@@ -212,7 +268,25 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
             </div>
 
             <h3 className="text-lg font-bold text-gray-800 mb-4 px-1">{t('active_guidelines', lang)}</h3>
-            {profile.conditions.length === 0 ? (
+            
+            {/* Show custom conditions in read-only mode if they exist */}
+            {customConditions.length > 0 && (
+                <div className="mb-4 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
+                    <h4 className="text-xs font-bold text-blue-800 uppercase mb-2 tracking-wider">{t('custom_condition_title', lang)}</h4>
+                    <div className="flex flex-wrap gap-2">
+                        {customConditions.map((cond, idx) => (
+                            <span key={idx} className="bg-white text-blue-700 px-3 py-1 rounded-lg text-sm font-bold shadow-sm border border-blue-100">
+                                {cond}
+                            </span>
+                        ))}
+                    </div>
+                     <p className="text-[10px] text-blue-400 mt-2 italic">
+                        * Custom conditions are analyzed by AI without hardcoded rules.
+                    </p>
+                </div>
+            )}
+
+            {profile.conditions.filter(id => ALL_CONDITIONS.some(c => c.id === id)).length === 0 && customConditions.length === 0 ? (
                 <div className="p-6 text-center text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-300">
                     <p>{t('no_conditions', lang)}</p>
                     <button onClick={() => setEditing(true)} className="text-emerald-600 font-bold mt-2 text-sm">{t('add_conditions', lang)}</button>
@@ -221,16 +295,9 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
                 <div className="space-y-4">
                     {profile.conditions.map((id) => {
                     const rule = DIET_RULES_MAP[id];
-                    // If no rule found, try to find name at least
-                    if (!rule) {
-                         const cond = ALL_CONDITIONS.find(c => c.id === id);
-                         if(!cond) return null;
-                         return (
-                            <div key={id} className="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
-                                <h4 className="font-bold text-gray-800">{cond.name}</h4>
-                            </div>
-                         )
-                    }
+                    // Only show standard rules here. Custom ones are handled above or skipped.
+                    if (!rule) return null;
+
                     return (
                         <div key={id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
                         <div className="bg-gradient-to-r from-gray-50 to-white p-3 border-b border-gray-100 flex justify-between items-center">

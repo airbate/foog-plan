@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { UserProfile, ConditionId, Language } from '../types';
-import { HEALTH_CATEGORIES } from '../services/dietRules';
+import { HEALTH_CATEGORIES, ALL_CONDITIONS } from '../services/dietRules';
 import { saveProfile } from '../services/storage';
-import { CheckIcon, InfoIcon, ChevronRightIcon } from '../components/Icons';
+import { CheckIcon, InfoIcon, ChevronRightIcon, TrashIcon } from '../components/Icons';
 import { t } from '../services/i18n';
 
 interface OnboardingProps {
@@ -15,6 +15,7 @@ export const Onboarding: React.FC<OnboardingProps> = ({ initialProfile, onComple
   const [name, setName] = useState(initialProfile.name);
   const [lang, setLang] = useState<Language>(initialProfile.language);
   const [expandedCategories, setExpandedCategories] = useState<Record<string, boolean>>({});
+  const [customInput, setCustomInput] = useState("");
 
   const toggleCondition = (id: ConditionId) => {
     if (selected.includes(id)) {
@@ -31,6 +32,19 @@ export const Onboarding: React.FC<OnboardingProps> = ({ initialProfile, onComple
     }));
   };
 
+  const addCustomCondition = () => {
+    const trimmed = customInput.trim();
+    if (!trimmed) return;
+    if (!selected.includes(trimmed)) {
+        setSelected([...selected, trimmed]);
+    }
+    setCustomInput("");
+  };
+
+  const removeCustomCondition = (id: string) => {
+      setSelected(selected.filter(item => item !== id));
+  };
+
   const handleSave = () => {
     const updatedProfile: UserProfile = {
       ...initialProfile,
@@ -42,6 +56,9 @@ export const Onboarding: React.FC<OnboardingProps> = ({ initialProfile, onComple
     saveProfile(updatedProfile);
     onComplete(updatedProfile);
   };
+
+  // Identify which selected conditions are custom (not in ALL_CONDITIONS)
+  const customConditions = selected.filter(id => !ALL_CONDITIONS.some(c => c.id === id));
 
   return (
     <div className="min-h-screen bg-white p-6 flex flex-col max-w-md mx-auto">
@@ -134,6 +151,43 @@ export const Onboarding: React.FC<OnboardingProps> = ({ initialProfile, onComple
                 </div>
             )
           })}
+
+          {/* Custom Conditions Section */}
+          <div className="border border-blue-100 rounded-xl overflow-hidden bg-blue-50/50">
+             <div className="p-4">
+                <h3 className="text-sm font-bold text-blue-800 mb-3">{t('custom_condition_title', lang)}</h3>
+                
+                {/* Custom List */}
+                <div className="flex flex-wrap gap-2 mb-3">
+                    {customConditions.map((cond, idx) => (
+                        <div key={idx} className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center shadow-sm">
+                            <span className="mr-2">{cond}</span>
+                            <button onClick={() => removeCustomCondition(cond)} className="text-blue-400 hover:text-blue-600">
+                                <TrashIcon className="w-4 h-4" />
+                            </button>
+                        </div>
+                    ))}
+                </div>
+
+                {/* Input */}
+                <div className="flex gap-2">
+                    <input 
+                        type="text" 
+                        value={customInput}
+                        onChange={(e) => setCustomInput(e.target.value)}
+                        placeholder={t('custom_input_placeholder', lang)}
+                        className="flex-1 border border-blue-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                    />
+                    <button 
+                        onClick={addCustomCondition}
+                        disabled={!customInput.trim()}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 disabled:opacity-50"
+                    >
+                        {t('btn_add', lang)}
+                    </button>
+                </div>
+             </div>
+          </div>
         </div>
       </div>
 

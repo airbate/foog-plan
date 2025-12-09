@@ -79,7 +79,12 @@ export const TRANSLATIONS = {
     RISK_SAFE: "SAFE",
     RISK_MODERATE: "MODERATE",
     RISK_RISKY: "RISKY",
-    RISK_UNKNOWN: "UNKNOWN"
+    RISK_UNKNOWN: "UNKNOWN",
+
+    // Custom Conditions
+    custom_condition_title: "Other Conditions",
+    custom_input_placeholder: "e.g. Migraine, Asthma...",
+    btn_add: "Add"
   },
   zh: {
     app_name: "饮食卫士 AI",
@@ -159,7 +164,12 @@ export const TRANSLATIONS = {
     RISK_SAFE: "安全",
     RISK_MODERATE: "适量/中风险",
     RISK_RISKY: "高风险",
-    RISK_UNKNOWN: "未知"
+    RISK_UNKNOWN: "未知",
+
+    // Custom Conditions
+    custom_condition_title: "其他健康状况 (AI分析)",
+    custom_input_placeholder: "例如：偏头痛、哮喘...",
+    btn_add: "添加"
   }
 };
 
