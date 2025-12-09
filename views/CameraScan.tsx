@@ -3,7 +3,7 @@ import Webcam from 'react-webcam';
 import { analyzeFoodImage } from '../services/gemini';
 import { UserProfile, AnalysisResult, RiskLevel, ScanRecord } from '../types';
 import { saveScan } from '../services/storage';
-import { AlertTriangleIcon, CheckIcon, InfoIcon, SparklesIcon } from '../components/Icons';
+import { AlertTriangleIcon, CheckIcon, SparklesIcon, SunIcon, TargetIcon } from '../components/Icons';
 import { t } from '../services/i18n';
 
 interface CameraScanProps {
@@ -18,6 +18,7 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [nutrientMode, setNutrientMode] = useState<'amount' | 'percent'>('amount');
+  const [focusing, setFocusing] = useState(false);
 
   const lang = userProfile.language;
 
@@ -28,6 +29,28 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
       handleAnalysis(imageSrc);
     }
   }, [webcamRef]);
+
+  const triggerFocus = useCallback(async () => {
+    if (focusing || image) return;
+    setFocusing(true);
+    
+    // Visual feedback delay
+    setTimeout(() => setFocusing(false), 800);
+
+    // Try hardware focus if available
+    try {
+        const stream = webcamRef.current?.video?.srcObject as MediaStream;
+        const track = stream?.getVideoTracks()[0];
+        
+        if (track && track.applyConstraints) {
+             await track.applyConstraints({ 
+                advanced: [{ focusMode: 'continuous' } as any] 
+             });
+        }
+    } catch(e) {
+        console.warn("Focus constraint not supported", e);
+    }
+  }, [webcamRef, focusing, image]);
 
   const handleAnalysis = async (imgSrc: string) => {
     setAnalyzing(true);
@@ -243,32 +266,69 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
   }
 
   return (
-    <div className="flex flex-col h-full bg-black relative">
+    <div className="flex flex-col h-full bg-black relative overflow-hidden">
       {!image ? (
         <>
-            <div className="flex-1 relative overflow-hidden">
+            <div className="flex-1 relative overflow-hidden" onClick={triggerFocus}>
                 <Webcam
                     audio={false}
                     ref={webcamRef}
                     screenshotFormat="image/jpeg"
                     videoConstraints={{ facingMode: "environment" }}
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover transition-all duration-300"
+                    style={{ filter: focusing ? 'blur(2px)' : 'none' }}
                 />
-                {/* Overlay */}
-                <div className="absolute inset-0 border-2 border-white/30 m-8 rounded-3xl pointer-events-none flex items-center justify-center">
-                    <div className="text-white/70 text-sm bg-black/50 px-3 py-1 rounded-full backdrop-blur-sm">
-                        {t('align_food', lang)}
+                
+                {/* Darker Gradient Overlay for better text visibility */}
+                <div className="absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-black/60 to-transparent pointer-events-none"></div>
+
+                {/* Lighting Tip */}
+                <div className="absolute top-6 left-0 right-0 flex justify-center pointer-events-none">
+                    <div className="flex items-center space-x-2 bg-black/40 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/10">
+                         <SunIcon className="w-4 h-4 text-yellow-400" />
+                         <span className="text-white/90 text-xs font-medium">{t('cam_tip_light', lang)}</span>
+                    </div>
+                </div>
+
+                {/* Viewfinder Overlay */}
+                <div className="absolute inset-0 m-8 pointer-events-none flex flex-col items-center justify-center">
+                    {/* Corners */}
+                    <div className="absolute top-0 left-0 w-12 h-12 border-t-4 border-l-4 border-white/60 rounded-tl-xl"></div>
+                    <div className="absolute top-0 right-0 w-12 h-12 border-t-4 border-r-4 border-white/60 rounded-tr-xl"></div>
+                    <div className="absolute bottom-0 left-0 w-12 h-12 border-b-4 border-l-4 border-white/60 rounded-bl-xl"></div>
+                    <div className="absolute bottom-0 right-0 w-12 h-12 border-b-4 border-r-4 border-white/60 rounded-br-xl"></div>
+                    
+                    {/* Center Crosshair */}
+                    <div className="opacity-50">
+                        <div className="w-8 h-0.5 bg-white/50 mb-3 mx-auto"></div>
+                        <div className="h-8 w-0.5 bg-white/50 -mt-7 mx-auto"></div>
+                    </div>
+
+                    <div className="absolute -bottom-8 text-white/70 text-sm font-medium tracking-wide">
+                        {focusing ? t('cam_focusing', lang) : t('align_food', lang)}
                     </div>
                 </div>
             </div>
             
-            <div className="h-32 bg-black flex items-center justify-center relative z-10">
-                <button
-                onClick={capture}
-                className="w-20 h-20 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+            <div className="h-40 bg-black/90 backdrop-blur-sm flex items-center justify-center relative z-10 px-8">
+                {/* Focus Button */}
+                <button 
+                    onClick={(e) => { e.stopPropagation(); triggerFocus(); }}
+                    className="absolute left-10 p-4 bg-gray-800 rounded-full text-white hover:bg-gray-700 active:scale-95 transition-all"
                 >
-                <div className="w-16 h-16 bg-white border-2 border-black rounded-full"></div>
+                    <TargetIcon className="w-6 h-6" />
                 </button>
+
+                {/* Capture Button */}
+                <button
+                    onClick={capture}
+                    className="w-20 h-20 bg-white rounded-full border-4 border-gray-300 flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+                >
+                    <div className="w-16 h-16 bg-white border-2 border-black rounded-full ring-2 ring-gray-100"></div>
+                </button>
+
+                 {/* Spacer to balance Focus Button */}
+                 <div className="absolute right-10 w-14"></div>
             </div>
         </>
       ) : (

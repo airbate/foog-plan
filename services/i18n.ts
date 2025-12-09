@@ -18,6 +18,9 @@ export const TRANSLATIONS = {
     
     // Camera
     align_food: "Align food within frame",
+    cam_tip_light: "Ensure well-lit environment",
+    cam_tip_focus: "Tap to focus",
+    cam_focusing: "Focusing...",
     analyzing: "Analyzing Food...",
     checking_profile: "Checking against your profile:",
     btn_scan_again: "Scan Another Food",
@@ -95,6 +98,9 @@ export const TRANSLATIONS = {
     
     // Camera
     align_food: "将食物对准框内",
+    cam_tip_light: "确保光线充足",
+    cam_tip_focus: "点击屏幕对焦",
+    cam_focusing: "正在对焦...",
     analyzing: "正在分析食物...",
     checking_profile: "正在比对您的健康档案:",
     btn_scan_again: "扫描下一个",
