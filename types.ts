@@ -34,6 +34,28 @@ export interface AnalysisResult {
   nutrients: NutrientInfo;
 }
 
+export interface Recipe {
+  name: string;
+  description: string;
+  ingredients: string[];
+  missingIngredients: string[]; // New field: Main ingredients needed but not found in photo
+  instructions: string[];
+  healthBenefits: string;
+  macrosEstimate: {
+    calories: number;
+    protein: number;
+    carbs: number;
+    fat: number;
+  };
+}
+
+export interface ChefResponse {
+  identifiedIngredients: string[];
+  breakfast: Recipe;
+  lunch: Recipe;
+  dinner: Recipe;
+}
+
 export interface ScanRecord {
   id: string;
   timestamp: number;
@@ -103,4 +125,13 @@ export interface Ingredient {
   beneficialFor: ConditionId[]; // IDs from dietRules
   harmfulFor: ConditionId[];   // IDs from dietRules
   description: { en: string; zh: string };
+}
+
+// New Interface for Disease Detailed Guide
+export interface DiseaseInfo {
+  id: ConditionId;
+  overview: { en: string; zh: string }; // Nature / Incubation / Development
+  severity: { en: string; zh: string }; // Analysis of severity
+  dietaryHabits: { en: string; zh: string }; // Specific eating habits
+  advice: { en: string; zh: string }; // General management advice
 }

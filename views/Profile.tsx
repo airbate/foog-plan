@@ -74,67 +74,70 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
       }
   }
 
-  // Identify custom conditions (those not in ALL_CONDITIONS)
   const customConditions = profile.conditions.filter(id => !ALL_CONDITIONS.some(c => c.id === id));
 
   return (
-    <div className="p-4 pb-20">
-      <div className="flex items-center space-x-4 mb-6 p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-        <div className="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center text-emerald-600">
-          <UserIcon className="w-8 h-8" />
-        </div>
-        <div>
-          <h2 className="text-xl font-bold text-gray-900">{profile.name}</h2>
-          <button 
-            onClick={() => setEditing(!editing)}
-            className="text-sm text-emerald-600 font-medium hover:underline mt-1"
-          >
-            {editing ? t('done_editing', lang) : t('edit_conditions', lang)}
-          </button>
+    <div className="p-5 pb-24 animate-fade-in">
+      {/* Profile Header Card */}
+      <div className="relative overflow-hidden mb-8 p-6 bg-gradient-to-br from-slate-800 to-slate-900 rounded-3xl shadow-xl text-white">
+         <div className="absolute top-0 right-0 p-32 bg-white/5 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none"></div>
+         
+         <div className="flex items-center space-x-5 relative z-10">
+            <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center text-white border border-white/20 shadow-inner">
+              <UserIcon className="w-8 h-8" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold tracking-tight">{profile.name}</h2>
+              <button 
+                onClick={() => setEditing(!editing)}
+                className="text-sm text-emerald-300 font-medium hover:text-emerald-200 transition-colors mt-1 flex items-center"
+              >
+                {editing ? t('done_editing', lang) : t('edit_conditions', lang)}
+                <ChevronRightIcon className="w-3 h-3 ml-1" />
+              </button>
+            </div>
+         </div>
+
+         {/* Language Toggle Inside Header */}
+         <div className="mt-6 flex bg-black/20 rounded-xl p-1 w-fit border border-white/10 backdrop-blur-sm">
+            <button 
+                onClick={() => changeLanguage('en')} 
+                className={`px-4 py-1.5 text-[10px] rounded-lg font-bold uppercase tracking-wider transition-all ${lang === 'en' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}
+            >
+                English
+            </button>
+            <button 
+                onClick={() => changeLanguage('zh')} 
+                className={`px-4 py-1.5 text-[10px] rounded-lg font-bold uppercase tracking-wider transition-all ${lang === 'zh' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-400 hover:text-white'}`}
+            >
+                中文
+            </button>
         </div>
       </div>
 
-        {/* Language Switcher */}
-        <div className="flex justify-center mb-8">
-            <div className="flex bg-gray-200 rounded-lg p-1">
-                <button 
-                    onClick={() => changeLanguage('en')} 
-                    className={`px-4 py-1.5 text-xs rounded-md font-bold transition-all ${lang === 'en' ? 'bg-white shadow text-emerald-600' : 'text-gray-500'}`}
-                >
-                    English
-                </button>
-                <button 
-                    onClick={() => changeLanguage('zh')} 
-                    className={`px-4 py-1.5 text-xs rounded-md font-bold transition-all ${lang === 'zh' ? 'bg-white shadow text-emerald-600' : 'text-gray-500'}`}
-                >
-                    中文
-                </button>
-            </div>
-        </div>
-
       {editing ? (
-          <div className="space-y-4 mb-8">
-              <h3 className="font-bold text-gray-800">{t('my_conditions', lang)}</h3>
+          <div className="space-y-4 animate-fade-in">
+              <h3 className="font-extrabold text-slate-800 text-lg mb-4">{t('my_conditions', lang)}</h3>
               {HEALTH_CATEGORIES.map((category) => {
                 const isExpanded = expandedCats[category.id];
                 const selectedCount = category.groups.flatMap(g => g.conditions).filter(c => profile.conditions.includes(c.id)).length;
                 return (
-                    <div key={category.id} className="border border-gray-200 rounded-xl overflow-hidden bg-white">
+                    <div key={category.id} className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all hover:shadow-md">
                         <button 
                             onClick={() => toggleCat(category.id)}
-                            className="w-full flex items-center justify-between p-3 bg-gray-50"
+                            className="w-full flex items-center justify-between p-4 bg-white"
                         >
-                            <span className="font-bold text-sm text-gray-700">{category.name}</span>
-                            <div className="flex items-center space-x-2">
-                                {selectedCount > 0 && <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">{selectedCount}</span>}
-                                <ChevronRightIcon className={`w-4 h-4 text-gray-400 ${isExpanded ? 'rotate-90' : ''}`} />
+                            <span className="font-bold text-sm text-slate-700">{category.name}</span>
+                            <div className="flex items-center space-x-3">
+                                {selectedCount > 0 && <span className="text-[10px] font-bold bg-emerald-100 text-emerald-700 px-2 py-1 rounded-md">{selectedCount}</span>}
+                                <ChevronRightIcon className={`w-4 h-4 text-slate-300 transition-transform duration-300 ${isExpanded ? 'rotate-90' : ''}`} />
                             </div>
                         </button>
                         {isExpanded && (
-                            <div className="p-3 space-y-3">
+                            <div className="px-4 pb-4 bg-slate-50/50 border-t border-slate-100 pt-3">
                                 {category.groups.map(group => (
-                                    <div key={group.id}>
-                                        <p className="text-[10px] uppercase font-bold text-gray-400 mb-2">{group.name}</p>
+                                    <div key={group.id} className="mb-4 last:mb-0">
+                                        <p className="text-[10px] uppercase font-bold text-slate-400 mb-2 pl-1 tracking-wider">{group.name}</p>
                                         <div className="grid grid-cols-1 gap-2">
                                             {group.conditions.map(cond => {
                                                 const isSelected = profile.conditions.includes(cond.id);
@@ -142,7 +145,7 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
                                                     <button 
                                                         key={cond.id}
                                                         onClick={() => toggleCondition(cond.id)}
-                                                        className={`flex items-center justify-between p-2 rounded-lg text-sm border ${isSelected ? 'border-emerald-500 bg-emerald-50 text-emerald-900' : 'border-gray-100'}`}
+                                                        className={`flex items-center justify-between p-3 rounded-xl text-sm border font-medium transition-all ${isSelected ? 'border-emerald-500 bg-emerald-50 text-emerald-800 shadow-sm' : 'border-white bg-white text-slate-500 shadow-sm hover:border-emerald-200'}`}
                                                     >
                                                         <span>{cond.name}</span>
                                                         {isSelected && <CheckIcon className="w-4 h-4 text-emerald-600" />}
@@ -158,17 +161,16 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
                 )
               })}
 
-              {/* Custom Conditions Editor */}
-               <div className="border border-blue-100 rounded-xl overflow-hidden bg-blue-50/50">
-                    <div className="p-4">
+               <div className="border border-blue-100 rounded-2xl overflow-hidden bg-gradient-to-br from-blue-50 to-white shadow-sm mt-6">
+                    <div className="p-5">
                         <h3 className="text-sm font-bold text-blue-800 mb-3">{t('custom_condition_title', lang)}</h3>
                         
-                        <div className="flex flex-wrap gap-2 mb-3">
+                        <div className="flex flex-wrap gap-2 mb-4">
                             {customConditions.map((cond, idx) => (
-                                <div key={idx} className="bg-blue-100 text-blue-800 px-3 py-1.5 rounded-lg text-sm font-bold flex items-center shadow-sm">
+                                <div key={idx} className="bg-white border border-blue-100 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-bold flex items-center shadow-sm">
                                     <span className="mr-2">{cond}</span>
-                                    <button onClick={() => removeCustomCondition(cond)} className="text-blue-400 hover:text-blue-600">
-                                        <TrashIcon className="w-4 h-4" />
+                                    <button onClick={() => removeCustomCondition(cond)} className="text-blue-300 hover:text-red-500">
+                                        <TrashIcon className="w-3 h-3" />
                                     </button>
                                 </div>
                             ))}
@@ -180,12 +182,12 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
                                 value={customInput}
                                 onChange={(e) => setCustomInput(e.target.value)}
                                 placeholder={t('custom_input_placeholder', lang)}
-                                className="flex-1 border border-blue-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+                                className="flex-1 border border-blue-200 rounded-xl px-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none shadow-sm"
                             />
                             <button 
                                 onClick={addCustomCondition}
                                 disabled={!customInput.trim()}
-                                className="bg-blue-600 text-white px-4 py-2 rounded-lg font-bold text-sm hover:bg-blue-700 disabled:opacity-50"
+                                className="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:bg-blue-700 disabled:opacity-50 shadow-md"
                             >
                                 {t('btn_add', lang)}
                             </button>
@@ -196,14 +198,16 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
       ) : (
         <>
             {/* AI Care Plan Section */}
-            <div className="mb-8">
+            <div className="mb-8 animate-fade-in" style={{animationDelay: '0.1s'}}>
                 <div className="flex items-center justify-between mb-4 px-1">
-                     <h3 className="text-lg font-bold text-gray-800 flex items-center">
-                        <FileTextIcon className="w-5 h-5 mr-2 text-emerald-600" />
+                     <h3 className="text-lg font-extrabold text-slate-800 flex items-center">
+                        <div className="p-1.5 bg-emerald-100 rounded-lg mr-2 text-emerald-600">
+                            <FileTextIcon className="w-4 h-4" />
+                        </div>
                         {t('plan_title', lang)}
                      </h3>
                      {profile.dietPlan && !generatingPlan && (
-                         <button onClick={handleGeneratePlan} className="text-xs font-medium text-gray-400 hover:text-emerald-600 flex items-center">
+                         <button onClick={handleGeneratePlan} className="text-xs font-bold text-slate-400 hover:text-emerald-600 flex items-center transition-colors bg-white border border-slate-200 rounded-full px-3 py-1 shadow-sm">
                             <SparklesIcon className="w-3 h-3 mr-1" />
                             {t('btn_regenerate_plan', lang)}
                          </button>
@@ -211,33 +215,33 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
                 </div>
 
                 {!profile.dietPlan ? (
-                    <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-6 text-center border border-emerald-100 shadow-sm">
-                        <div className="w-12 h-12 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-sm">
-                            <SparklesIcon className="w-6 h-6 text-emerald-500" />
+                    <div className="bg-gradient-to-br from-white to-emerald-50 rounded-3xl p-8 text-center border border-emerald-100 shadow-lg shadow-emerald-50">
+                        <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-md text-emerald-500 transform rotate-3">
+                            <SparklesIcon className="w-8 h-8" />
                         </div>
-                        <p className="text-sm text-gray-600 mb-4 px-4">Generate a comprehensive diet and lifestyle plan tailored to your conditions.</p>
+                        <p className="text-sm font-medium text-slate-600 mb-6 leading-relaxed">Generate a comprehensive, AI-powered diet and lifestyle plan tailored specifically to your unique health profile.</p>
                         <button 
                             onClick={handleGeneratePlan}
                             disabled={generatingPlan || profile.conditions.length === 0}
-                            className="bg-emerald-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all w-full"
+                            className="bg-emerald-600 text-white font-bold py-3.5 px-8 rounded-xl shadow-lg shadow-emerald-200 hover:bg-emerald-700 disabled:opacity-50 disabled:shadow-none transition-all w-full active:scale-95"
                         >
                             {generatingPlan ? t('plan_generating', lang) : t('btn_generate_plan', lang)}
                         </button>
                         {profile.conditions.length === 0 && (
-                            <p className="text-xs text-red-400 mt-2">Please select conditions first.</p>
+                            <p className="text-xs text-rose-500 mt-3 font-medium bg-rose-50 inline-block px-3 py-1 rounded-lg">Please select conditions first.</p>
                         )}
                     </div>
                 ) : (
-                    <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="p-4 border-b border-gray-50">
-                             <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">{t('plan_summary', lang)}</h4>
-                             <p className="text-sm text-gray-700 leading-relaxed font-medium">{profile.dietPlan.summary}</p>
+                    <div className="bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 overflow-hidden">
+                        <div className="p-6 border-b border-slate-50">
+                             <h4 className="text-[10px] font-extrabold text-emerald-600 uppercase tracking-widest mb-3">{t('plan_summary', lang)}</h4>
+                             <p className="text-sm text-slate-700 leading-relaxed font-medium">{profile.dietPlan.summary}</p>
                         </div>
                         
                         {/* Meal Plan */}
-                        <div className="p-4 border-b border-gray-50 bg-gray-50/50">
-                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{t('plan_meals', lang)}</h4>
-                            <div className="space-y-3">
+                        <div className="p-6 border-b border-slate-50 bg-slate-50/50">
+                            <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-4">{t('plan_meals', lang)}</h4>
+                            <div className="space-y-4">
                                 <MealItem label={t('meal_breakfast', lang)} text={profile.dietPlan.meals.breakfast} />
                                 <MealItem label={t('meal_lunch', lang)} text={profile.dietPlan.meals.lunch} />
                                 <MealItem label={t('meal_dinner', lang)} text={profile.dietPlan.meals.dinner} />
@@ -246,18 +250,18 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
                         </div>
 
                         {/* Tips */}
-                        <div className="p-4">
-                            <h4 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">{t('plan_tips', lang)}</h4>
-                            <ul className="space-y-2">
+                        <div className="p-6 bg-white">
+                            <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-4">{t('plan_tips', lang)}</h4>
+                            <ul className="space-y-3">
                                 {profile.dietPlan.guidelines.map((tip, i) => (
-                                    <li key={`guide-${i}`} className="flex items-start text-sm text-gray-600">
-                                        <span className="mr-2 mt-1.5 w-1.5 h-1.5 bg-emerald-400 rounded-full flex-shrink-0"></span>
+                                    <li key={`guide-${i}`} className="flex items-start text-sm text-slate-600 font-medium">
+                                        <span className="mr-3 mt-1.5 w-1.5 h-1.5 bg-emerald-400 rounded-full flex-shrink-0 shadow-sm shadow-emerald-200"></span>
                                         {tip}
                                     </li>
                                 ))}
                                 {profile.dietPlan.lifestyle.map((tip, i) => (
-                                    <li key={`life-${i}`} className="flex items-start text-sm text-gray-600">
-                                        <span className="mr-2 mt-1.5 w-1.5 h-1.5 bg-blue-400 rounded-full flex-shrink-0"></span>
+                                    <li key={`life-${i}`} className="flex items-start text-sm text-slate-600 font-medium">
+                                        <span className="mr-3 mt-1.5 w-1.5 h-1.5 bg-blue-400 rounded-full flex-shrink-0 shadow-sm shadow-blue-200"></span>
                                         {tip}
                                     </li>
                                 ))}
@@ -267,61 +271,62 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
                 )}
             </div>
 
-            <h3 className="text-lg font-bold text-gray-800 mb-4 px-1">{t('active_guidelines', lang)}</h3>
+            <h3 className="text-lg font-extrabold text-slate-800 mb-4 px-1">{t('active_guidelines', lang)}</h3>
             
-            {/* Show custom conditions in read-only mode if they exist */}
             {customConditions.length > 0 && (
-                <div className="mb-4 bg-blue-50/50 p-4 rounded-xl border border-blue-100">
-                    <h4 className="text-xs font-bold text-blue-800 uppercase mb-2 tracking-wider">{t('custom_condition_title', lang)}</h4>
+                <div className="mb-6 bg-gradient-to-r from-blue-50 to-white p-5 rounded-2xl border border-blue-100 shadow-sm">
+                    <h4 className="text-xs font-bold text-blue-700 uppercase mb-3 tracking-wider flex items-center">
+                        <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
+                        {t('custom_condition_title', lang)}
+                    </h4>
                     <div className="flex flex-wrap gap-2">
                         {customConditions.map((cond, idx) => (
-                            <span key={idx} className="bg-white text-blue-700 px-3 py-1 rounded-lg text-sm font-bold shadow-sm border border-blue-100">
+                            <span key={idx} className="bg-white text-blue-800 px-3 py-1.5 rounded-lg text-xs font-bold shadow-sm border border-blue-100">
                                 {cond}
                             </span>
                         ))}
                     </div>
-                     <p className="text-[10px] text-blue-400 mt-2 italic">
-                        * Custom conditions are analyzed by AI without hardcoded rules.
+                     <p className="text-[10px] text-blue-400 mt-3 font-medium opacity-80">
+                        * Custom conditions are analyzed by AI dynamically.
                     </p>
                 </div>
             )}
 
             {profile.conditions.filter(id => ALL_CONDITIONS.some(c => c.id === id)).length === 0 && customConditions.length === 0 ? (
-                <div className="p-6 text-center text-gray-500 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-                    <p>{t('no_conditions', lang)}</p>
-                    <button onClick={() => setEditing(true)} className="text-emerald-600 font-bold mt-2 text-sm">{t('add_conditions', lang)}</button>
+                <div className="p-10 text-center bg-white rounded-3xl border-2 border-dashed border-slate-200">
+                    <p className="text-slate-400 font-medium mb-3">{t('no_conditions', lang)}</p>
+                    <button onClick={() => setEditing(true)} className="text-emerald-600 font-bold text-sm bg-emerald-50 px-4 py-2 rounded-full hover:bg-emerald-100 transition-colors">{t('add_conditions', lang)}</button>
                 </div>
             ) : (
                 <div className="space-y-4">
                     {profile.conditions.map((id) => {
                     const rule = DIET_RULES_MAP[id];
-                    // Only show standard rules here. Custom ones are handled above or skipped.
                     if (!rule) return null;
 
                     return (
-                        <div key={id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                        <div className="bg-gradient-to-r from-gray-50 to-white p-3 border-b border-gray-100 flex justify-between items-center">
-                            <h4 className="font-bold text-gray-800 text-sm">{rule.name}</h4>
-                        </div>
-                        <div className="p-4 space-y-3">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-[10px] font-bold text-red-500 uppercase mb-1 tracking-wider">{t('guideline_avoid', lang)}</p>
-                                    <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5">
-                                        {rule.avoid.slice(0, 3).map(item => <li key={item} className="truncate">{item}</li>)}
-                                    </ul>
+                        <div key={id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden hover:shadow-md transition-shadow">
+                            <div className="bg-slate-50/50 p-4 border-b border-slate-50 flex justify-between items-center">
+                                <h4 className="font-bold text-slate-700 text-sm">{rule.name}</h4>
+                            </div>
+                            <div className="p-5 space-y-4">
+                                <div className="grid grid-cols-2 gap-6">
+                                    <div>
+                                        <p className="text-[10px] font-extrabold text-rose-500 uppercase mb-2 tracking-widest">{t('guideline_avoid', lang)}</p>
+                                        <ul className="text-xs text-slate-600 space-y-1.5 font-medium">
+                                            {rule.avoid.slice(0, 3).map(item => <li key={item} className="flex items-center"><span className="w-1 h-1 bg-rose-300 rounded-full mr-2"></span>{item}</li>)}
+                                        </ul>
+                                    </div>
+                                    <div>
+                                        <p className="text-[10px] font-extrabold text-emerald-600 uppercase mb-2 tracking-widest">{t('guideline_good', lang)}</p>
+                                         <ul className="text-xs text-slate-600 space-y-1.5 font-medium">
+                                            {rule.recommend.slice(0, 3).map(item => <li key={item} className="flex items-center"><span className="w-1 h-1 bg-emerald-300 rounded-full mr-2"></span>{item}</li>)}
+                                        </ul>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="text-[10px] font-bold text-emerald-600 uppercase mb-1 tracking-wider">{t('guideline_good', lang)}</p>
-                                     <ul className="text-xs text-gray-600 list-disc list-inside space-y-0.5">
-                                        {rule.recommend.slice(0, 3).map(item => <li key={item} className="truncate">{item}</li>)}
-                                    </ul>
+                                <div className="pt-3 border-t border-slate-50">
+                                    <p className="text-xs text-slate-400 italic leading-relaxed">"{rule.generalAdvice}"</p>
                                 </div>
                             </div>
-                            <div className="pt-2 border-t border-gray-100">
-                                <p className="text-xs text-gray-500 italic leading-relaxed">"{rule.generalAdvice}"</p>
-                            </div>
-                        </div>
                         </div>
                     );
                     })}
@@ -330,8 +335,8 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
         </>
       )}
 
-      <div className="mt-8 p-4 bg-gray-100 rounded-xl text-xs text-gray-500">
-        <p className="font-bold mb-1">{t('disclaimer_title', lang)}</p>
+      <div className="mt-10 p-5 bg-slate-100 rounded-2xl text-[10px] text-slate-400 leading-relaxed text-center">
+        <p className="font-bold mb-1 uppercase tracking-widest">{t('disclaimer_title', lang)}</p>
         <p>{t('disclaimer_text', lang)}</p>
       </div>
     </div>
@@ -339,8 +344,8 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
 };
 
 const MealItem = ({label, text}: {label: string, text: string}) => (
-    <div className="flex flex-col sm:flex-row sm:items-baseline">
-        <span className="text-xs font-bold text-gray-500 w-20 flex-shrink-0">{label}</span>
-        <span className="text-sm text-gray-800">{text}</span>
+    <div className="flex flex-col sm:flex-row sm:items-baseline border-b border-slate-100 last:border-0 pb-3 last:pb-0">
+        <span className="text-xs font-bold text-slate-400 w-24 flex-shrink-0 uppercase tracking-wide">{label}</span>
+        <span className="text-sm text-slate-800 font-medium">{text}</span>
     </div>
 );

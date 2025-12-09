@@ -186,6 +186,19 @@ export const HEALTH_CATEGORIES: HealthCategory[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'I',
+    name: 'I. Neurological (神经系统)',
+    groups: [
+      {
+        id: 'I1',
+        name: 'I1 Cognitive Health',
+        conditions: [
+          { id: 'alzheimers', name: "Alzheimer's Prevention/Care (阿尔茨海默病)" }
+        ]
+      }
+    ]
   }
 ];
 
@@ -285,6 +298,14 @@ export const DIET_RULES_MAP: Record<string, DietRule> = {
     recommend: ['Fruits/Veg (蔬果)', 'Whole grains (全谷)', 'Plant protein (植物蛋白)'],
     generalAdvice: 'Heart-healthy, low-inflammatory diet. (心脏健康，抗炎饮食)'
   },
+  'heart_failure': {
+    id: 'heart_failure',
+    name: 'Heart Failure (心力衰竭)',
+    avoid: ['Salt (盐)', 'MSG (味精)', 'Canned goods (罐头)'],
+    limit: ['Fluid intake (液体摄入)', 'Alcohol (酒)'],
+    recommend: ['Fresh herbs (香草)', 'Lean meats (瘦肉)'],
+    generalAdvice: 'Strict sodium control (<2000mg) and fluid restriction are vital. (严格控制钠<2000mg和液体摄入至关重要)'
+  },
 
   // C. Kidney
   'ckd_1_2': {
@@ -364,6 +385,16 @@ export const DIET_RULES_MAP: Record<string, DietRule> = {
     limit: ['Caffeine (咖啡因)', 'Processed junk (垃圾食品)'],
     recommend: ['Folic acid (叶酸)', 'Iron (铁)', 'Calcium (钙)', 'Protein (蛋白)'],
     generalAdvice: 'Focus on nutrient density. Food safety is paramount. (注重营养密度，食品安全第一)'
+  },
+
+  // I. Neurological
+  'alzheimers': {
+    id: 'alzheimers',
+    name: "Alzheimer's Disease (阿尔茨海默病)",
+    avoid: ['Processed meats (加工肉)', 'Added sugar (添加糖)', 'Refined carbs (精制碳水)'],
+    limit: ['Red meat (红肉)', 'Butter/Margarine (黄油/人造黄油)', 'Cheese (奶酪)', 'Fried food (油炸)'],
+    recommend: ['Leafy greens (叶菜)', 'Berries (浆果)', 'Nuts (坚果)', 'Fatty fish (深海鱼)', 'Olive oil (橄榄油)'],
+    generalAdvice: 'Follow the MIND Diet: A hybrid of Mediterranean and DASH diets proven to support brain health. (遵循MIND饮食：结合地中海和DASH饮食，证实有助于脑部健康)'
   }
 };
 

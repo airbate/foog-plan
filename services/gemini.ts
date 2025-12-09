@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type } from "@google/genai";
-import { AnalysisResult, RiskLevel, ConditionId, Language, AiDietPlan } from '../types';
+import { AnalysisResult, RiskLevel, ConditionId, Language, AiDietPlan, Recipe, ChefResponse } from '../types';
 import { getDietRulesForConditions, ALL_CONDITIONS } from './dietRules';
 
 // NOTE: In a production app, the API key should be proxy-ed through a backend.
@@ -233,3 +233,126 @@ export const generateDietPlan = async (
       generatedAt: Date.now()
   };
 }
+
+export const generateRecipeFromIngredients = async (
+  base64Images: string[],
+  conditionIds: ConditionId[],
+  language: Language
+): Promise<ChefResponse> => {
+  if (!apiKey) {
+    throw new Error("API Key is missing.");
+  }
+
+  const model = "gemini-2.5-flash"; 
+  
+  // Prepare all image parts
+  const imageParts = base64Images.map(img => ({
+    inlineData: {
+      mimeType: "image/jpeg",
+      data: img.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, "")
+    }
+  }));
+
+  const conditionNames = conditionIds.map(id => {
+    const found = ALL_CONDITIONS.find(c => c.id === id);
+    return found ? found.name : id;
+  }).join(", ");
+
+  const specificDietRules = getDietRulesForConditions(conditionIds);
+  const langInstruction = language === 'zh' 
+    ? "OUTPUT MUST BE IN SIMPLIFIED CHINESE (中文)." 
+    : "OUTPUT MUST BE IN ENGLISH.";
+
+  const prompt = `
+    You are an expert Chef and Clinical Dietitian.
+    Analyze the provided image(s) to identify ALL ingredients present across all photos.
+    
+    Based on these identified ingredients, generate THREE distinct recipe options:
+    1. A Breakfast option
+    2. A Lunch option
+    3. A Dinner option
+
+    CRITICAL INSTRUCTION FOR MISSING INGREDIENTS:
+    If the detected ingredients are not enough to make a complete, delicious, and balanced meal (e.g., user only has carrots), YOU MUST Auto-Complete the recipe by suggesting necessary MAIN ingredients (like proteins, grains, or key vegetables) that the user needs to add.
+    
+    The user has these conditions: ${conditionNames}.
+    STRICTLY ADHERE TO THESE MEDICAL GUIDELINES:
+    ${specificDietRules}
+
+    If the image contains unsafe ingredients (e.g. high sugar for diabetic), DO NOT USE THEM in the recipes.
+    
+    Task:
+    1. List the ingredients identified from the images.
+    2. For EACH meal option (Breakfast, Lunch, Dinner), provide:
+       - Recipe Name
+       - Appetizing Description
+       - Full Ingredients List (detected + missing items)
+       - **Missing Ingredients**: Specifically list main ingredients that were NOT in the photo but are required for this recipe. Do not list basic pantry staples like oil/salt/pepper here.
+       - Step-by-step Instructions
+       - Health Benefits specific to the user's conditions
+       - Estimated Macros
+
+    ${langInstruction}
+  `;
+
+  // Helper schema for a single recipe to avoid repetition
+  const recipeSchema = {
+    type: Type.OBJECT,
+    properties: {
+      name: { type: Type.STRING },
+      description: { type: Type.STRING },
+      ingredients: { type: Type.ARRAY, items: { type: Type.STRING } },
+      missingIngredients: { 
+          type: Type.ARRAY, 
+          items: { type: Type.STRING },
+          description: "List of MAIN ingredients required for this recipe that were NOT found in the user's photos."
+      },
+      instructions: { type: Type.ARRAY, items: { type: Type.STRING } },
+      healthBenefits: { type: Type.STRING },
+      macrosEstimate: {
+        type: Type.OBJECT,
+        properties: {
+          calories: { type: Type.NUMBER },
+          protein: { type: Type.NUMBER },
+          carbs: { type: Type.NUMBER },
+          fat: { type: Type.NUMBER }
+        },
+        required: ["calories", "protein", "carbs", "fat"]
+      }
+    },
+    required: ["name", "description", "ingredients", "missingIngredients", "instructions", "healthBenefits", "macrosEstimate"]
+  };
+
+  const response = await ai.models.generateContent({
+    model: model,
+    contents: {
+      parts: [
+        ...imageParts,
+        { text: prompt }
+      ]
+    },
+    config: {
+      responseMimeType: "application/json",
+      responseSchema: {
+        type: Type.OBJECT,
+        properties: {
+          identifiedIngredients: { 
+            type: Type.ARRAY, 
+            items: { type: Type.STRING },
+            description: "List of ingredients recognized from the image"
+          },
+          breakfast: recipeSchema,
+          lunch: recipeSchema,
+          dinner: recipeSchema
+        },
+        required: ["identifiedIngredients", "breakfast", "lunch", "dinner"]
+      }
+    }
+  });
+
+  if (!response.text) {
+      throw new Error("No response from AI");
+  }
+
+  return JSON.parse(response.text);
+};

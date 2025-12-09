@@ -7,6 +7,7 @@ export const TRANSLATIONS = {
     tab_history: "History",
     tab_profile: "Profile",
     tab_guide: "Guide",
+    tab_chef: "Chef",
     
     // Onboarding
     welcome_title: "Welcome to NutriGuard",
@@ -87,8 +88,10 @@ export const TRANSLATIONS = {
     custom_input_placeholder: "e.g. Migraine, Asthma...",
     btn_add: "Add",
 
-    // Ingredient Guide
-    guide_title: "Food Encyclopedia",
+    // Ingredient Guide & Disease Info
+    guide_title: "Knowledge Base",
+    guide_tab_ingredients: "Food Encyclopedia",
+    guide_tab_conditions: "Health Conditions",
     guide_search_placeholder: "Search ingredients...",
     cat_all: "All",
     cat_grain: "Grains",
@@ -99,7 +102,35 @@ export const TRANSLATIONS = {
     guide_good_for: "Good For",
     guide_caution: "Caution For",
     guide_per_100g: "Per 100g",
-    guide_match_profile: "Matches your profile"
+    guide_match_profile: "Matches your profile",
+    guide_filter_all: "All Ingredients",
+    guide_filter_beneficial: "Good for Me",
+    guide_filter_avoid: "Caution for Me",
+    
+    // Disease Detail Labels
+    disease_overview: "Development & Nature",
+    disease_severity: "Severity Analysis",
+    disease_diet: "Dietary Principles",
+    disease_advice: "Management Advice",
+
+    // Recipe Generator
+    chef_title: "AI Personal Chef",
+    chef_desc: "Snap photos of your ingredients (the more the better!), and I'll cook up a recipe safe for your health.",
+    snap_ingredients: "Snap",
+    generating_recipe: "Creating Recipes...",
+    recipe_result: "Your Personalized Menu",
+    ingredients_list: "Ingredients",
+    instructions: "Instructions",
+    health_benefits: "Why It's Good For You",
+    macros_est: "Estimated Macros",
+    btn_new_recipe: "Create Another Recipe",
+    chef_ingredients_found: "Ingredients Found",
+    meal_option_breakfast: "Breakfast",
+    meal_option_lunch: "Lunch",
+    meal_option_dinner: "Dinner",
+    chef_btn_cook: "Cook",
+    chef_photos_count: "Photos",
+    chef_missing_ingredients: "You'll also need:"
   },
   zh: {
     app_name: "饮食卫士 AI",
@@ -107,6 +138,7 @@ export const TRANSLATIONS = {
     tab_history: "历史",
     tab_profile: "我的",
     tab_guide: "指南",
+    tab_chef: "私厨",
     
     // Onboarding
     welcome_title: "欢迎使用 饮食卫士",
@@ -179,7 +211,7 @@ export const TRANSLATIONS = {
     // Risk Labels
     RISK_SAFE: "安全",
     RISK_MODERATE: "适量/中风险",
-    RISK_RISKY: "高风险",
+    RISK_RISKY: "安全",
     RISK_UNKNOWN: "未知",
 
     // Custom Conditions
@@ -187,8 +219,10 @@ export const TRANSLATIONS = {
     custom_input_placeholder: "例如：偏头痛、哮喘...",
     btn_add: "添加",
 
-    // Ingredient Guide
-    guide_title: "食物百科",
+    // Ingredient Guide & Disease Info
+    guide_title: "健康知识库",
+    guide_tab_ingredients: "食物百科",
+    guide_tab_conditions: "疾病科普",
     guide_search_placeholder: "搜索食材...",
     cat_all: "全部",
     cat_grain: "主食",
@@ -199,7 +233,35 @@ export const TRANSLATIONS = {
     guide_good_for: "有益于",
     guide_caution: "慎用于",
     guide_per_100g: "每100克",
-    guide_match_profile: "符合您的健康档案"
+    guide_match_profile: "符合您的健康档案",
+    guide_filter_all: "所有食材",
+    guide_filter_beneficial: "对我有益",
+    guide_filter_avoid: "需注意",
+    
+    // Disease Detail Labels
+    disease_overview: "发病机制与周期",
+    disease_severity: "严重程度分析",
+    disease_diet: "饮食习惯原则",
+    disease_advice: "日常管理建议",
+
+    // Recipe Generator
+    chef_title: "AI 专属私厨",
+    chef_desc: "拍摄您的现有食材（越多越好！），我将为您烹制一份符合您健康状况的专属食谱。",
+    snap_ingredients: "拍摄",
+    generating_recipe: "正在生成食谱...",
+    recipe_result: "为您定制的食谱",
+    ingredients_list: "所需食材",
+    instructions: "烹饪步骤",
+    health_benefits: "健康益处",
+    macros_est: "营养估算",
+    btn_new_recipe: "生成新食谱",
+    chef_ingredients_found: "识别到的食材",
+    meal_option_breakfast: "早餐推荐",
+    meal_option_lunch: "午餐推荐",
+    meal_option_dinner: "晚餐推荐",
+    chef_btn_cook: "开始烹饪",
+    chef_photos_count: "张照片",
+    chef_missing_ingredients: "建议补充食材:"
   }
 };
 

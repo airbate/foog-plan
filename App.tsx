@@ -5,12 +5,13 @@ import { CameraScan } from './views/CameraScan';
 import { History } from './views/History';
 import { Profile } from './views/Profile';
 import { IngredientGuide } from './views/IngredientGuide';
+import { RecipeGenerator } from './views/RecipeGenerator';
 import { UserProfile } from './types';
 import { getProfile, createInitialProfile, saveProfile } from './services/storage';
 
 const App: React.FC = () => {
   const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [currentTab, setCurrentTab] = useState<'scan' | 'history' | 'profile' | 'guide'>('scan');
+  const [currentTab, setCurrentTab] = useState<'scan' | 'history' | 'profile' | 'guide' | 'chef'>('scan');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ const App: React.FC = () => {
       )}
       {currentTab === 'history' && <History />}
       {currentTab === 'guide' && <IngredientGuide userProfile={profile} />}
+      {currentTab === 'chef' && <RecipeGenerator userProfile={profile} />}
       {currentTab === 'profile' && (
         <Profile 
           profile={profile} 
