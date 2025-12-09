@@ -6,6 +6,7 @@ export const TRANSLATIONS = {
     tab_scan: "Scan",
     tab_history: "History",
     tab_profile: "Profile",
+    tab_guide: "Guide",
     
     // Onboarding
     welcome_title: "Welcome to NutriGuard",
@@ -84,13 +85,28 @@ export const TRANSLATIONS = {
     // Custom Conditions
     custom_condition_title: "Other Conditions",
     custom_input_placeholder: "e.g. Migraine, Asthma...",
-    btn_add: "Add"
+    btn_add: "Add",
+
+    // Ingredient Guide
+    guide_title: "Food Encyclopedia",
+    guide_search_placeholder: "Search ingredients...",
+    cat_all: "All",
+    cat_grain: "Grains",
+    cat_protein: "Protein",
+    cat_vegetable: "Veg",
+    cat_fruit: "Fruit",
+    cat_dairy: "Dairy",
+    guide_good_for: "Good For",
+    guide_caution: "Caution For",
+    guide_per_100g: "Per 100g",
+    guide_match_profile: "Matches your profile"
   },
   zh: {
     app_name: "饮食卫士 AI",
     tab_scan: "扫描",
     tab_history: "历史",
     tab_profile: "我的",
+    tab_guide: "指南",
     
     // Onboarding
     welcome_title: "欢迎使用 饮食卫士",
@@ -169,7 +185,21 @@ export const TRANSLATIONS = {
     // Custom Conditions
     custom_condition_title: "其他健康状况 (AI分析)",
     custom_input_placeholder: "例如：偏头痛、哮喘...",
-    btn_add: "添加"
+    btn_add: "添加",
+
+    // Ingredient Guide
+    guide_title: "食物百科",
+    guide_search_placeholder: "搜索食材...",
+    cat_all: "全部",
+    cat_grain: "主食",
+    cat_protein: "蛋白",
+    cat_vegetable: "蔬菜",
+    cat_fruit: "水果",
+    cat_dairy: "乳品",
+    guide_good_for: "有益于",
+    guide_caution: "慎用于",
+    guide_per_100g: "每100克",
+    guide_match_profile: "符合您的健康档案"
   }
 };
 

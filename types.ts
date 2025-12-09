@@ -26,7 +26,7 @@ export interface AnalysisResult {
   foodName: string;
   riskLevel: RiskLevel;
   riskReason: string; // Brief one-line reason
-  triggeredConditions: string[]; // Specific conditions that caused the risk
+  triggeredConditions: string[]; // Specific conditions that caused a 'RISKY' or 'MODERATE' assessment
   detailedAnalysis: string; // Paragraph explanation
   portionRecommendation: string; // e.g. "Limit to 100g"
   alternativeSuggestion?: string; // Legacy string field
@@ -91,4 +91,16 @@ export interface DietRule {
   limit: string[];
   recommend: string[];
   generalAdvice: string;
+}
+
+// New Interface for Ingredient Guide
+export interface Ingredient {
+  id: string;
+  name: { en: string; zh: string };
+  category: 'grain' | 'protein' | 'vegetable' | 'fruit' | 'dairy' | 'other';
+  calories: number; // per 100g
+  nutrients: { protein: number; carbs: number; fat: number };
+  beneficialFor: ConditionId[]; // IDs from dietRules
+  harmfulFor: ConditionId[];   // IDs from dietRules
+  description: { en: string; zh: string };
 }

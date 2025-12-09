@@ -1,12 +1,12 @@
 import React from 'react';
-import { CameraIcon, HistoryIcon, UserIcon } from './Icons';
+import { CameraIcon, HistoryIcon, UserIcon, BookOpenIcon } from './Icons';
 import { Language } from '../types';
 import { t } from '../services/i18n';
 
 interface LayoutProps {
   children: React.ReactNode;
-  currentTab: 'scan' | 'history' | 'profile';
-  onTabChange: (tab: 'scan' | 'history' | 'profile') => void;
+  currentTab: 'scan' | 'history' | 'profile' | 'guide';
+  onTabChange: (tab: 'scan' | 'history' | 'profile' | 'guide') => void;
   language: Language;
 }
 
@@ -27,15 +27,25 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentTab, onTabChang
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="bg-white border-t border-gray-200 px-6 py-3 flex justify-between items-center z-20">
+      <nav className="bg-white border-t border-gray-200 px-4 py-3 flex justify-between items-center z-20">
         <button
           onClick={() => onTabChange('history')}
-          className={`flex flex-col items-center space-y-1 ${
+          className={`flex flex-col items-center space-y-1 w-16 ${
             currentTab === 'history' ? 'text-emerald-600' : 'text-gray-400'
           }`}
         >
           <HistoryIcon className="w-6 h-6" />
-          <span className="text-xs font-medium">{t('tab_history', language)}</span>
+          <span className="text-[10px] font-medium">{t('tab_history', language)}</span>
+        </button>
+
+        <button
+          onClick={() => onTabChange('guide')}
+          className={`flex flex-col items-center space-y-1 w-16 ${
+            currentTab === 'guide' ? 'text-emerald-600' : 'text-gray-400'
+          }`}
+        >
+          <BookOpenIcon className="w-6 h-6" />
+          <span className="text-[10px] font-medium">{t('tab_guide', language)}</span>
         </button>
 
         <button
@@ -47,12 +57,12 @@ export const Layout: React.FC<LayoutProps> = ({ children, currentTab, onTabChang
 
         <button
           onClick={() => onTabChange('profile')}
-          className={`flex flex-col items-center space-y-1 ${
+          className={`flex flex-col items-center space-y-1 w-16 ${
             currentTab === 'profile' ? 'text-emerald-600' : 'text-gray-400'
           }`}
         >
           <UserIcon className="w-6 h-6" />
-          <span className="text-xs font-medium">{t('tab_profile', language)}</span>
+          <span className="text-[10px] font-medium">{t('tab_profile', language)}</span>
         </button>
       </nav>
     </div>
