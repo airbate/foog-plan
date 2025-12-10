@@ -1,7 +1,8 @@
+
 import React, { useState } from 'react';
 import { UserProfile, ConditionId, Language } from '../types';
 import { saveProfile } from '../services/storage';
-import { UserIcon, ChevronRightIcon, CheckIcon, FileTextIcon, SparklesIcon, TrashIcon } from '../components/Icons';
+import { UserIcon, ChevronRightIcon, CheckIcon, FileTextIcon, SparklesIcon, TrashIcon, TargetIcon, AlertTriangleIcon } from '../components/Icons';
 import { DIET_RULES_MAP, HEALTH_CATEGORIES, ALL_CONDITIONS } from '../services/dietRules';
 import { generateDietPlan } from '../services/gemini';
 import { t } from '../services/i18n';
@@ -248,6 +249,62 @@ export const Profile: React.FC<ProfileProps> = ({ profile, onUpdate }) => {
                                 <MealItem label={t('meal_snack', lang)} text={profile.dietPlan.meals.snacks} />
                             </div>
                         </div>
+
+                        {/* Workout Plan - NEW SECTION */}
+                        {profile.dietPlan.workout && (
+                             <div className="p-6 border-b border-slate-50 bg-gradient-to-r from-blue-50/30 to-indigo-50/30">
+                                <div className="flex items-center mb-4">
+                                    <TargetIcon className="w-4 h-4 text-indigo-500 mr-2" />
+                                    <h4 className="text-[10px] font-extrabold text-indigo-500 uppercase tracking-widest">{t('plan_workout', lang)}</h4>
+                                </div>
+                                
+                                <div className="grid grid-cols-2 gap-3 mb-5">
+                                    <div className="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">{t('workout_freq', lang)}</p>
+                                        <p className="text-sm font-bold text-slate-700">{profile.dietPlan.workout.frequency}</p>
+                                    </div>
+                                    <div className="bg-white p-3 rounded-xl border border-blue-100 shadow-sm">
+                                        <p className="text-[9px] font-bold text-slate-400 uppercase mb-1">{t('workout_duration', lang)}</p>
+                                        <p className="text-sm font-bold text-slate-700">{profile.dietPlan.workout.avgDuration}</p>
+                                    </div>
+                                </div>
+                                
+                                <div className="mb-4">
+                                     <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">{t('workout_focus', lang)}</p>
+                                     <p className="text-sm font-medium text-slate-700 bg-white px-3 py-2 rounded-lg border border-slate-100">{profile.dietPlan.workout.focus}</p>
+                                </div>
+
+                                <div className="mb-4">
+                                    <p className="text-[9px] font-bold text-slate-400 uppercase mb-2">{t('workout_exercises', lang)}</p>
+                                    <div className="space-y-2">
+                                        {profile.dietPlan.workout.exercises.map((ex, i) => (
+                                            <div key={i} className="bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
+                                                <div className="flex justify-between items-start mb-1">
+                                                    <span className="text-sm font-bold text-slate-700">{ex.name}</span>
+                                                    <span className="text-xs font-bold text-indigo-500 bg-indigo-50 px-2 py-0.5 rounded-md">{ex.durationOrReps}</span>
+                                                </div>
+                                                <p className="text-xs text-slate-500">{ex.benefit}</p>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                     <p className="text-[9px] font-bold text-slate-400 uppercase mb-2 flex items-center">
+                                         <AlertTriangleIcon className="w-3 h-3 mr-1 text-amber-500" />
+                                         {t('workout_safety', lang)}
+                                     </p>
+                                     <ul className="space-y-1">
+                                        {profile.dietPlan.workout.precautions.map((item, i) => (
+                                            <li key={i} className="text-xs text-amber-800 bg-amber-50 px-3 py-1.5 rounded-lg border border-amber-100 flex items-start">
+                                                <span className="mr-2 opacity-50">•</span>
+                                                {item}
+                                            </li>
+                                        ))}
+                                     </ul>
+                                </div>
+                             </div>
+                        )}
 
                         {/* Tips */}
                         <div className="p-6 bg-white">

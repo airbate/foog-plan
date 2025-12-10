@@ -1,3 +1,4 @@
+
 import { Language } from '../types';
 
 export const TRANSLATIONS = {
@@ -69,6 +70,14 @@ export const TRANSLATIONS = {
     meal_dinner: "Dinner",
     meal_snack: "Snacks",
     
+    // Workout Plan
+    plan_workout: "Exercise Plan",
+    workout_freq: "Frequency",
+    workout_duration: "Duration",
+    workout_focus: "Focus Area",
+    workout_exercises: "Recommended Exercises",
+    workout_safety: "Safety Precautions",
+
     // Nutrients
     nut_calories: "Calories",
     nut_carbs: "Carbs",
@@ -199,6 +208,14 @@ export const TRANSLATIONS = {
     meal_lunch: "午餐",
     meal_dinner: "晚餐",
     meal_snack: "加餐",
+
+    // Workout Plan
+    plan_workout: "运动康复计划",
+    workout_freq: "频率",
+    workout_duration: "时长",
+    workout_focus: "重点",
+    workout_exercises: "推荐动作",
+    workout_safety: "安全注意事项",
     
     // Nutrients
     nut_calories: "热量",

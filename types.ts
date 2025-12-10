@@ -1,3 +1,4 @@
+
 export type ConditionId = string;
 export type Language = 'en' | 'zh';
 
@@ -70,9 +71,24 @@ export interface DailyMealPlan {
   snacks: string;
 }
 
+export interface WorkoutExercise {
+  name: string;
+  durationOrReps: string;
+  benefit: string;
+}
+
+export interface WorkoutRoutine {
+  frequency: string;
+  avgDuration: string;
+  focus: string;
+  exercises: WorkoutExercise[];
+  precautions: string[];
+}
+
 export interface AiDietPlan {
   summary: string; // High level strategy
   meals: DailyMealPlan;
+  workout?: WorkoutRoutine; // New field for exercise plan
   guidelines: string[]; // Key dos and don'ts combined
   lifestyle: string[]; // Exercise, sleep, hydration tips
   generatedAt: number;

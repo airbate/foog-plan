@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult, RiskLevel, ConditionId, Language, AiDietPlan, Recipe, ChefResponse } from '../types';
 import { getDietRulesForConditions, ALL_CONDITIONS } from './dietRules';
@@ -169,7 +170,7 @@ export const generateDietPlan = async (
     : "OUTPUT MUST BE IN ENGLISH.";
 
   const prompt = `
-    You are an expert Clinical Dietitian.
+    You are an expert Clinical Dietitian and Personal Trainer.
     Create a personalized "Care Plan" for a user with the following conditions: ${conditionNames}.
     
     The plan must be holistic, safe, and address all the conditions simultaneously.
@@ -177,14 +178,14 @@ export const generateDietPlan = async (
     CRITICAL INSTRUCTION FOR INGREDIENTS:
     - Use only COMMON, EASILY ACCESSIBLE ingredients found in standard local grocery stores.
     - Avoid rare, exotic, or expensive ingredients.
-    - Focus on affordable, everyday foods that are easy to prepare.
-    - If suggesting specific dishes, ensure the main components are widely available.
     
-    Output structured data with:
+    Your Output must include:
     1. A summary strategy (2 sentences).
     2. A sample 1-day meal plan (Breakfast, Lunch, Dinner, 1 Snack).
-    3. 4-5 Key Dietary Guidelines (Do's and Don'ts mixed).
-    4. 3 Lifestyle tips (exercise, sleep, hydration, etc).
+    3. A specialized Workout/Exercise Routine that is SAFE for their conditions.
+       - Include Frequency, Duration, Focus Area, 3-4 Specific Exercises, and Safety Precautions.
+    4. 4-5 Key Dietary Guidelines (Do's and Don'ts mixed).
+    5. 3 Lifestyle tips (sleep, hydration, etc).
 
     ${langInstruction}
   `;
@@ -208,6 +209,28 @@ export const generateDietPlan = async (
                       },
                       required: ["breakfast", "lunch", "dinner", "snacks"]
                   },
+                  workout: {
+                    type: Type.OBJECT,
+                    properties: {
+                      frequency: { type: Type.STRING, description: "e.g. 3-4 times/week" },
+                      avgDuration: { type: Type.STRING, description: "e.g. 30 mins" },
+                      focus: { type: Type.STRING, description: "e.g. Low Impact Cardio" },
+                      exercises: {
+                        type: Type.ARRAY,
+                        items: {
+                          type: Type.OBJECT,
+                          properties: {
+                            name: { type: Type.STRING },
+                            durationOrReps: { type: Type.STRING },
+                            benefit: { type: Type.STRING }
+                          },
+                          required: ["name", "durationOrReps", "benefit"]
+                        }
+                      },
+                      precautions: { type: Type.ARRAY, items: { type: Type.STRING } }
+                    },
+                    required: ["frequency", "avgDuration", "focus", "exercises", "precautions"]
+                  },
                   guidelines: { 
                       type: Type.ARRAY, 
                       items: { type: Type.STRING }
@@ -217,7 +240,7 @@ export const generateDietPlan = async (
                       items: { type: Type.STRING }
                   }
               },
-              required: ["summary", "meals", "guidelines", "lifestyle"]
+              required: ["summary", "meals", "workout", "guidelines", "lifestyle"]
           }
       }
   });
