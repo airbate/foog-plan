@@ -97,6 +97,21 @@ export interface AiDietPlan {
 export interface UserProfile {
   id: string;
   name: string;
+  
+  // Basic Bio Data
+  age?: number;
+  gender?: 'male' | 'female' | 'other';
+  height?: number; // cm
+  weight?: number; // kg
+  
+  // Vitals & Meds
+  bloodPressure?: {
+    systolic: number;
+    diastolic: number;
+  };
+  symptoms?: string;
+  medications?: string;
+
   conditions: ConditionId[]; // Array of strings (e.g., 'diabetes_t2', 'gout')
   onboarded: boolean;
   language: Language;

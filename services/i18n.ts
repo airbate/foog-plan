@@ -12,10 +12,29 @@ export const TRANSLATIONS = {
     
     // Onboarding
     welcome_title: "Welcome to NutriGuard",
-    welcome_desc: "Personalized nutrition analysis based on your health profile.",
+    welcome_desc: "Let's build your personalized health profile to get the most accurate AI analysis.",
+    section_basic: "Basic Information",
+    section_vitals: "Vitals & Health",
+    section_medical: "Medical Profile",
+    
     label_name: "Your Name",
     label_name_placeholder: "Enter your name",
-    label_conditions: "Select Conditions",
+    label_age: "Age",
+    label_gender: "Gender",
+    gender_male: "Male",
+    gender_female: "Female",
+    gender_other: "Other",
+    label_height: "Height (cm)",
+    label_weight: "Weight (kg)",
+    label_bp: "Blood Pressure (mmHg)",
+    label_bp_sys: "Systolic",
+    label_bp_dia: "Diastolic",
+    label_symptoms: "Current Symptoms",
+    label_symptoms_placeholder: "e.g. Dizziness, fatigue, nausea...",
+    label_medications: "Current Medications",
+    label_medications_placeholder: "e.g. Metformin, Lisinopril...",
+    
+    label_conditions: "Current Illnesses / Conditions",
     privacy_note: "Data stored locally. Not medical advice.",
     btn_start: "Save & Start",
     
@@ -39,7 +58,7 @@ export const TRANSLATIONS = {
     smart_swaps: "Smart Swaps",
     
     // History
-    history_title: "History",
+    history_title: "Scan History",
     history_empty: "No food scans yet.",
     history_empty_desc: "Go to the Scan tab to start analyzing your meals.",
     confirm_clear: "Are you sure you want to clear all history?",
@@ -58,8 +77,8 @@ export const TRANSLATIONS = {
     disclaimer_text: "NutriGuard AI is an experimental tool. This information is for educational purposes only and not a substitute for professional medical advice, diagnosis, or treatment.",
     
     // Plan
-    plan_title: "Personalized Treatment Plan",
-    btn_generate_plan: "Generate AI Diet Plan",
+    plan_title: "Personalized Care Plan",
+    btn_generate_plan: "Generate Diet & Workout Plan",
     btn_regenerate_plan: "Regenerate Plan",
     plan_generating: "Designing your plan...",
     plan_summary: "Strategy",
@@ -71,7 +90,7 @@ export const TRANSLATIONS = {
     meal_snack: "Snacks",
     
     // Workout Plan
-    plan_workout: "Exercise Plan",
+    plan_workout: "You Can Exercise",
     workout_freq: "Frequency",
     workout_duration: "Duration",
     workout_focus: "Focus Area",
@@ -151,10 +170,29 @@ export const TRANSLATIONS = {
     
     // Onboarding
     welcome_title: "欢迎使用 饮食卫士",
-    welcome_desc: "基于您的健康状况提供个性化饮食风险评估。",
+    welcome_desc: "请完善您的个人健康档案，以便 AI 为您提供更精准的风险分析。",
+    section_basic: "基本信息",
+    section_vitals: "体征数据",
+    section_medical: "医疗档案",
+    
     label_name: "您的称呼",
     label_name_placeholder: "请输入姓名",
-    label_conditions: "选择健康状况",
+    label_age: "年龄",
+    label_gender: "性别",
+    gender_male: "男",
+    gender_female: "女",
+    gender_other: "其他",
+    label_height: "身高 (cm)",
+    label_weight: "体重 (kg)",
+    label_bp: "血压 (mmHg)",
+    label_bp_sys: "收缩压(高压)",
+    label_bp_dia: "舒张压(低压)",
+    label_symptoms: "当前症状",
+    label_symptoms_placeholder: "例如：头晕、乏力、恶心...",
+    label_medications: "正在服用的药物",
+    label_medications_placeholder: "例如：二甲双胍、阿司匹林...",
+    
+    label_conditions: "当前疾病 / 健康状况",
     privacy_note: "数据仅存储在本地。本应用不提供医疗建议。",
     btn_start: "保存并开始",
     
@@ -178,7 +216,7 @@ export const TRANSLATIONS = {
     smart_swaps: "智能替代推荐",
     
     // History
-    history_title: "历史记录",
+    history_title: "扫描历史",
     history_empty: "暂无扫描记录",
     history_empty_desc: "请前往扫描页面开始分析您的饮食。",
     confirm_clear: "确定要清空所有历史记录吗？",
@@ -197,8 +235,8 @@ export const TRANSLATIONS = {
     disclaimer_text: "本应用是基于人工智能的实验性工具。所有信息仅供参考，不能替代专业医生的诊断和治疗建议。饮食调整请遵医嘱。",
     
     // Plan
-    plan_title: "个性化治疗方案",
-    btn_generate_plan: "生成 AI 饮食方案",
+    plan_title: "个性化健康方案",
+    btn_generate_plan: "生成饮食与运动方案",
     btn_regenerate_plan: "重新生成",
     plan_generating: "正在为您规划方案...",
     plan_summary: "核心策略",
@@ -210,7 +248,7 @@ export const TRANSLATIONS = {
     meal_snack: "加餐",
 
     // Workout Plan
-    plan_workout: "运动康复计划",
+    plan_workout: "您可以运动",
     workout_freq: "频率",
     workout_duration: "时长",
     workout_focus: "重点",
