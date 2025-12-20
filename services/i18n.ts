@@ -10,6 +10,9 @@ export const TRANSLATIONS = {
     tab_guide: "Guide",
     tab_chef: "Chef",
     
+    // Navigation
+    btn_back: "Back",
+    
     // Onboarding
     welcome_title: "Welcome to NutriGuard",
     welcome_desc: "Let's build your personalized health profile to get the most accurate AI analysis.",
@@ -105,6 +108,14 @@ export const TRANSLATIONS = {
     nut_fat: "Fat",
     nut_sodium: "Sodium",
 
+    // Nutrient Descriptions
+    nut_calories_desc: "Energy provided by food. Essential for daily functions but excess leads to weight gain.",
+    nut_carbs_desc: "Main energy source. Diabetic patients should monitor intake to control blood sugar levels.",
+    nut_sugar_desc: "Simple carbohydrates that cause rapid blood sugar spikes. High intake is linked to diabetes and obesity.",
+    nut_protein_desc: "Building blocks for muscle and tissue repair. Important for immune function and satiety.",
+    nut_fat_desc: "Energy dense nutrient. Focus on healthy unsaturated fats over saturated/trans fats for heart health.",
+    nut_sodium_desc: "Essential mineral for fluid balance. Excess intake causes high blood pressure and strain on kidneys.",
+
     // Risk Labels
     RISK_SAFE: "SAFE",
     RISK_MODERATE: "MODERATE",
@@ -167,6 +178,9 @@ export const TRANSLATIONS = {
     tab_profile: "我的",
     tab_guide: "指南",
     tab_chef: "私厨",
+    
+    // Navigation
+    btn_back: "返回",
     
     // Onboarding
     welcome_title: "欢迎使用 饮食卫士",
@@ -263,10 +277,18 @@ export const TRANSLATIONS = {
     nut_fat: "脂肪",
     nut_sodium: "钠",
 
+    // Nutrient Descriptions
+    nut_calories_desc: "食物提供的能量。维持生命必需，但过量会导致体重增加。",
+    nut_carbs_desc: "主要的能量来源。糖尿病患者应监控摄入量以控制血糖水平。",
+    nut_sugar_desc: "简单碳水化合物，会导致血糖迅速升高。高摄入量与糖尿病和肥胖有关。",
+    nut_protein_desc: "肌肉和组织修复的基石。对免疫功能和饱腹感很重要。",
+    nut_fat_desc: "高能量营养素。为了心脏健康，应选择健康的不饱和脂肪，少吃饱和/反式脂肪。",
+    nut_sodium_desc: "维持体液平衡的必需矿物质。摄入过量会导致高血压并加重肾脏负担。",
+
     // Risk Labels
     RISK_SAFE: "安全",
     RISK_MODERATE: "适量/中风险",
-    RISK_RISKY: "安全",
+    RISK_RISKY: "危险",
     RISK_UNKNOWN: "未知",
 
     // Custom Conditions
@@ -294,7 +316,7 @@ export const TRANSLATIONS = {
     guide_filter_avoid: "需注意",
     
     // Disease Detail Labels
-    disease_overview: "发病机制与周期",
+    disease_overview: "病理概览",
     disease_severity: "严重程度分析",
     disease_diet: "饮食习惯原则",
     disease_advice: "日常管理建议",

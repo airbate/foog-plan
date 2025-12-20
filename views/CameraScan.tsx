@@ -1,9 +1,10 @@
+
 import React, { useRef, useState, useCallback } from 'react';
 import Webcam from 'react-webcam';
 import { analyzeFoodImage } from '../services/gemini';
 import { UserProfile, AnalysisResult, RiskLevel, ScanRecord } from '../types';
 import { saveScan } from '../services/storage';
-import { AlertTriangleIcon, CheckIcon, SparklesIcon, SunIcon, TargetIcon } from '../components/Icons';
+import { AlertTriangleIcon, CheckIcon, SparklesIcon, SunIcon, TargetIcon, InfoIcon } from '../components/Icons';
 import { t } from '../services/i18n';
 
 interface CameraScanProps {
@@ -209,6 +210,7 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
             <div className="grid grid-cols-2 gap-3">
                 <NutrientCard 
                     label={t('nut_calories', lang)} 
+                    description={t('nut_calories_desc', lang)}
                     value={result.nutrients.calories} 
                     unit="kcal" 
                     max={2000} 
@@ -216,6 +218,7 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
                 />
                 <NutrientCard 
                     label={t('nut_carbs', lang)} 
+                    description={t('nut_carbs_desc', lang)}
                     value={result.nutrients.carbs} 
                     unit="g" 
                     max={275} 
@@ -223,6 +226,7 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
                 />
                 <NutrientCard 
                     label={t('nut_protein', lang)} 
+                    description={t('nut_protein_desc', lang)}
                     value={result.nutrients.protein} 
                     unit="g" 
                     max={50} 
@@ -230,6 +234,7 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
                 />
                 <NutrientCard 
                     label={t('nut_fat', lang)} 
+                    description={t('nut_fat_desc', lang)}
                     value={result.nutrients.fat} 
                     unit="g" 
                     max={78} 
@@ -237,6 +242,7 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
                 />
                 <NutrientCard 
                     label={t('nut_sugar', lang)} 
+                    description={t('nut_sugar_desc', lang)}
                     value={result.nutrients.sugar} 
                     unit="g" 
                     max={50} 
@@ -245,6 +251,7 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
                 />
                 <NutrientCard 
                     label={t('nut_sodium', lang)} 
+                    description={t('nut_sodium_desc', lang)}
                     value={result.nutrients.sodium} 
                     unit="mg" 
                     max={2300} 
@@ -358,6 +365,7 @@ export const CameraScan: React.FC<CameraScanProps> = ({ userProfile, onAnalysisC
 
 interface NutrientCardProps {
     label: string;
+    description: string;
     value: number;
     unit: string;
     max: number; // Daily Value max
@@ -365,7 +373,8 @@ interface NutrientCardProps {
     viewMode: 'amount' | 'percent';
 }
 
-const NutrientCard = ({ label, value, unit, max, highlight = false, viewMode }: NutrientCardProps) => {
+const NutrientCard = ({ label, description, value, unit, max, highlight = false, viewMode }: NutrientCardProps) => {
+    const [showInfo, setShowInfo] = useState(false);
     const percentage = Math.min(100, Math.round((value / max) * 100));
     const barColor = highlight ? 'bg-red-500' : (percentage > 50 ? 'bg-blue-500' : 'bg-emerald-500');
 
@@ -377,9 +386,24 @@ const NutrientCard = ({ label, value, unit, max, highlight = false, viewMode }: 
         : `${value}${unit} / ${max}${unit}`;
 
     return (
-        <div className={`p-3 rounded-lg w-full transition-all ${highlight ? 'bg-red-50 border border-red-100' : 'bg-gray-50 border border-gray-100 hover:border-emerald-200'}`}>
+        <div className={`p-3 rounded-lg w-full transition-all relative ${highlight ? 'bg-red-50 border border-red-100' : 'bg-gray-50 border border-gray-100 hover:border-emerald-200'}`}>
+            {showInfo && (
+                <div 
+                    className="absolute inset-0 z-10 bg-slate-800/95 backdrop-blur-sm rounded-lg p-3 flex items-center justify-center text-center cursor-pointer animate-fade-in"
+                    onClick={() => setShowInfo(false)}
+                >
+                    <p className="text-[10px] text-white font-medium leading-relaxed">{description}</p>
+                </div>
+            )}
+            
             <div className="flex justify-between items-end mb-1">
-                <p className={`text-xs font-bold uppercase ${highlight ? 'text-red-600' : 'text-gray-400'}`}>{label}</p>
+                 <button 
+                    onClick={(e) => { e.stopPropagation(); setShowInfo(!showInfo); }}
+                    className="flex items-center space-x-1.5 focus:outline-none group"
+                >
+                    <p className={`text-xs font-bold uppercase ${highlight ? 'text-red-600' : 'text-gray-400 group-hover:text-blue-600 transition-colors'}`}>{label}</p>
+                    <InfoIcon className={`w-3 h-3 transition-colors ${highlight ? 'text-red-300' : 'text-gray-300 group-hover:text-blue-500'}`} />
+                </button>
                 <p className="text-sm font-bold text-gray-800">
                     {mainValue}
                     <span className="text-[10px] font-normal text-gray-500 ml-0.5">{mainUnit}</span>

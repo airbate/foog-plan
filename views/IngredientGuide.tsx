@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+
+import React, { useState, useMemo } from 'react';
 import { getIngredients } from '../services/ingredients';
 import { getDiseaseInfo } from '../services/diseaseInfo';
 import { HEALTH_CATEGORIES, DIET_RULES_MAP } from '../services/dietRules';
 import { Ingredient, UserProfile, ConditionId } from '../types';
 import { t } from '../services/i18n';
-import { CheckIcon, AlertTriangleIcon, ChevronRightIcon, FileTextIcon, InfoIcon } from '../components/Icons';
+import { CheckIcon, AlertTriangleIcon, ChevronRightIcon, FileTextIcon, InfoIcon, UserIcon, ArrowLeftIcon, SparklesIcon } from '../components/Icons';
 
 interface IngredientGuideProps {
   userProfile: UserProfile;
@@ -17,45 +18,45 @@ export const IngredientGuide: React.FC<IngredientGuideProps> = ({ userProfile })
   const [personalFilter, setPersonalFilter] = useState<'all' | 'beneficial' | 'avoid'>('all');
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
-  const [selectedDisease, setSelectedDisease] = useState<string | null>(null);
+  const [selectedDiseaseId, setSelectedDiseaseId] = useState<string | null>(null);
 
   const lang = userProfile.language;
   const ingredients = getIngredients();
 
-  const categories = [
+  const categories = useMemo(() => [
     { id: 'all', name: t('cat_all', lang) },
     { id: 'grain', name: t('cat_grain', lang) },
     { id: 'protein', name: t('cat_protein', lang) },
     { id: 'vegetable', name: t('cat_vegetable', lang) },
     { id: 'fruit', name: t('cat_fruit', lang) },
     { id: 'dairy', name: t('cat_dairy', lang) },
-  ];
+  ], [lang]);
 
-  const filteredIngredients = ingredients.filter(ing => {
-    // Improved search: Match against English OR Chinese name
-    const matchesSearch = 
-        ing.name.en.toLowerCase().includes(searchTerm.toLowerCase()) || 
-        ing.name.zh.includes(searchTerm);
-    
-    const matchesCategory = selectedCategory === 'all' || ing.category === selectedCategory;
-    
-    // Personalization logic
-    const userGoodMatches = ing.beneficialFor.filter(c => userProfile.conditions.includes(c));
-    const userBadMatches = ing.harmfulFor.filter(c => userProfile.conditions.includes(c));
+  const filteredIngredients = useMemo(() => {
+    return ingredients.filter(ing => {
+      const matchesSearch = 
+          ing.name.en.toLowerCase().includes(searchTerm.toLowerCase()) || 
+          ing.name.zh.includes(searchTerm);
+      
+      const matchesCategory = selectedCategory === 'all' || ing.category === selectedCategory;
+      
+      const userGoodMatches = ing.beneficialFor.filter(c => userProfile.conditions.includes(c));
+      const userBadMatches = ing.harmfulFor.filter(c => userProfile.conditions.includes(c));
 
-    let matchesPersonal = true;
-    if (personalFilter === 'beneficial') {
-        matchesPersonal = userGoodMatches.length > 0;
-    } else if (personalFilter === 'avoid') {
-        matchesPersonal = userBadMatches.length > 0;
-    }
+      let matchesPersonal = true;
+      if (personalFilter === 'beneficial') {
+          matchesPersonal = userGoodMatches.length > 0;
+      } else if (personalFilter === 'avoid') {
+          matchesPersonal = userBadMatches.length > 0;
+      }
 
-    return matchesSearch && matchesCategory && matchesPersonal;
-  });
+      return matchesSearch && matchesCategory && matchesPersonal;
+    });
+  }, [ingredients, searchTerm, selectedCategory, personalFilter, userProfile.conditions]);
 
   const getConditionName = (id: ConditionId) => {
     const rule = DIET_RULES_MAP[id];
-    return rule ? (lang === 'zh' ? rule.name.split('(')[1].replace(')', '') : rule.name.split('(')[0]) : id;
+    return rule ? (lang === 'zh' ? rule.name.split('(')[1]?.replace(')', '') || rule.name : rule.name.split('(')[0]) : id;
   };
 
   const toggleExpand = (id: string) => {
@@ -65,6 +66,126 @@ export const IngredientGuide: React.FC<IngredientGuideProps> = ({ userProfile })
   const toggleConditionCategory = (id: string) => {
       setExpandedCategory(expandedCategory === id ? null : id);
   };
+
+  const selectedDiseaseDetail = useMemo(() => {
+      return selectedDiseaseId ? getDiseaseInfo(selectedDiseaseId) : null;
+  }, [selectedDiseaseId]);
+
+  const selectedDiseaseRule = useMemo(() => {
+      return selectedDiseaseId ? DIET_RULES_MAP[selectedDiseaseId] : null;
+  }, [selectedDiseaseId]);
+
+  if (activeTab === 'conditions' && selectedDiseaseId) {
+      return (
+          <div className="animate-fade-in p-5 pb-24 h-full overflow-y-auto">
+              {/* Back Header */}
+              <button 
+                onClick={() => setSelectedDiseaseId(null)}
+                className="flex items-center text-slate-500 font-bold text-sm mb-6 hover:text-slate-800 transition-colors bg-white px-3 py-2 rounded-xl shadow-sm border border-slate-100 w-fit"
+              >
+                  <ArrowLeftIcon className="w-4 h-4 mr-2" />
+                  {t('btn_back', lang)}
+              </button>
+
+              {selectedDiseaseRule && (
+                  <div className="mb-6">
+                      <h2 className="text-2xl font-extrabold text-slate-800 mb-2 leading-tight">
+                          {selectedDiseaseRule.name}
+                      </h2>
+                      <div className="w-12 h-1 bg-indigo-500 rounded-full"></div>
+                  </div>
+              )}
+
+              {selectedDiseaseDetail ? (
+                  <div className="space-y-6">
+                      {/* Overview Section */}
+                      <section className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                          <div className="flex items-center mb-3">
+                              <div className="p-2 bg-indigo-50 rounded-xl mr-3 text-indigo-500">
+                                  <InfoIcon className="w-5 h-5" />
+                              </div>
+                              <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-widest">
+                                  {t('disease_overview', lang)}
+                              </h3>
+                          </div>
+                          <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                              {selectedDiseaseDetail.overview[lang]}
+                          </p>
+                      </section>
+
+                      {/* Severity Section */}
+                      <section className="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                          <div className="flex items-center mb-3">
+                              <div className="p-2 bg-rose-50 rounded-xl mr-3 text-rose-500">
+                                  <AlertTriangleIcon className="w-5 h-5" />
+                              </div>
+                              <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-widest">
+                                  {t('disease_severity', lang)}
+                              </h3>
+                          </div>
+                          <p className="text-sm text-slate-600 leading-relaxed font-medium">
+                              {selectedDiseaseDetail.severity[lang]}
+                          </p>
+                      </section>
+
+                      {/* Diet Section */}
+                      <section className="bg-emerald-50 p-5 rounded-3xl shadow-sm border border-emerald-100">
+                          <div className="flex items-center mb-4">
+                              <div className="p-2 bg-emerald-100 rounded-xl mr-3 text-emerald-600">
+                                  <SparklesIcon className="w-5 h-5" />
+                              </div>
+                              <h3 className="text-sm font-extrabold text-emerald-800 uppercase tracking-widest">
+                                  {t('disease_diet', lang)}
+                              </h3>
+                          </div>
+                          <p className="text-sm text-emerald-900 leading-relaxed font-bold mb-4">
+                              {selectedDiseaseDetail.dietaryHabits[lang]}
+                          </p>
+                          
+                          {/* Quick Summary Rules */}
+                          {selectedDiseaseRule && (
+                              <div className="grid grid-cols-2 gap-3 mt-4">
+                                  <div className="bg-white/60 backdrop-blur-sm p-3 rounded-2xl border border-white">
+                                      <p className="text-[10px] font-bold text-emerald-600 uppercase mb-2">{t('guideline_good', lang)}</p>
+                                      <ul className="text-[11px] text-slate-700 space-y-1">
+                                          {selectedDiseaseRule.recommend.slice(0, 3).map(r => <li key={r}>• {r}</li>)}
+                                      </ul>
+                                  </div>
+                                  <div className="bg-white/60 backdrop-blur-sm p-3 rounded-2xl border border-white">
+                                      <p className="text-[10px] font-bold text-rose-600 uppercase mb-2">{t('guideline_avoid', lang)}</p>
+                                      <ul className="text-[11px] text-slate-700 space-y-1">
+                                          {selectedDiseaseRule.avoid.slice(0, 3).map(r => <li key={r}>• {r}</li>)}
+                                      </ul>
+                                  </div>
+                              </div>
+                          )}
+                      </section>
+
+                      {/* Advice Section */}
+                      <section className="bg-blue-50 p-5 rounded-3xl shadow-sm border border-blue-100">
+                          <div className="flex items-center mb-3">
+                              <div className="p-2 bg-blue-100 rounded-xl mr-3 text-blue-600">
+                                  <FileTextIcon className="w-5 h-5" />
+                              </div>
+                              <h3 className="text-sm font-extrabold text-blue-800 uppercase tracking-widest">
+                                  {t('disease_advice', lang)}
+                              </h3>
+                          </div>
+                          <p className="text-sm text-blue-900 leading-relaxed font-medium italic">
+                              "{selectedDiseaseDetail.advice[lang]}"
+                          </p>
+                      </section>
+                  </div>
+              ) : (
+                  <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200">
+                      <p className="text-slate-400 font-medium italic">
+                          Detailed content for this condition is coming soon.
+                      </p>
+                  </div>
+              )}
+          </div>
+      );
+  }
 
   return (
     <div className="p-5 pb-24 animate-fade-in">
@@ -205,22 +326,72 @@ export const IngredientGuide: React.FC<IngredientGuideProps> = ({ userProfile })
 
                     {isExpanded && (
                         <div className="px-5 pb-6 pt-2 bg-gradient-to-b from-white to-slate-50/50">
-                        <p className="text-sm text-slate-600 mb-6 leading-relaxed font-medium">
-                            {ing.description[lang]}
-                        </p>
+                        {/* 1. Description Field */}
+                        <div className="mb-6 p-4 bg-slate-50 rounded-xl border border-slate-100">
+                            <h4 className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 flex items-center">
+                                <FileTextIcon className="w-3 h-3 mr-1" />
+                                Description
+                            </h4>
+                            <p className="text-sm text-slate-700 leading-relaxed font-medium">
+                                {ing.description[lang]}
+                            </p>
+                        </div>
 
-                        <div className="space-y-4">
-                            {/* Good For */}
+                        {/* 2. Personalized Filtered Lists */}
+                        {(hasGoodMatch || hasBadMatch) && (
+                            <div className="mb-6">
+                                <h4 className="text-[10px] font-extrabold text-indigo-500 uppercase tracking-widest mb-3 flex items-center">
+                                    <UserIcon className="w-3 h-3 mr-1" />
+                                    Your Health Analysis
+                                </h4>
+                                
+                                {hasBadMatch && (
+                                    <div className="bg-rose-50 border border-rose-100 p-3 rounded-lg mb-2">
+                                        <p className="text-xs font-bold text-rose-700 uppercase mb-2 flex items-center">
+                                            <AlertTriangleIcon className="w-3 h-3 mr-1" />
+                                            {t('guide_caution', lang)}
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {userBadMatches.map(cond => (
+                                                <span key={cond} className="text-xs font-bold text-rose-800 bg-white px-2 py-1 rounded border border-rose-100 shadow-sm">
+                                                    {getConditionName(cond)}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {hasGoodMatch && (
+                                    <div className="bg-emerald-50 border border-emerald-100 p-3 rounded-lg">
+                                        <p className="text-xs font-bold text-emerald-700 uppercase mb-2 flex items-center">
+                                            <CheckIcon className="w-3 h-3 mr-1" />
+                                            {t('guide_good_for', lang)}
+                                        </p>
+                                        <div className="flex flex-wrap gap-2">
+                                            {userGoodMatches.map(cond => (
+                                                <span key={cond} className="text-xs font-bold text-emerald-800 bg-white px-2 py-1 rounded border border-emerald-100 shadow-sm">
+                                                    {getConditionName(cond)}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {/* 3. General Lists (All) */}
+                        <div className="space-y-4 pt-4 border-t border-slate-100">
+                            {/* Good For (General) */}
                             {ing.beneficialFor.length > 0 && (
                             <div>
-                                <p className="text-[10px] font-extrabold text-emerald-600 uppercase mb-2 tracking-wide">{t('guide_good_for', lang)}</p>
+                                <p className="text-[10px] font-extrabold text-slate-400 uppercase mb-2 tracking-wide">{t('cat_all', lang)}: {t('guide_good_for', lang)}</p>
                                 <div className="flex flex-wrap gap-2">
                                 {ing.beneficialFor.map(cond => {
                                     const isUserMatch = userProfile.conditions.includes(cond);
                                     return (
                                     <span key={cond} className={`text-xs px-3 py-1.5 rounded-lg border flex items-center transition-all ${
                                         isUserMatch 
-                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 font-bold shadow-sm' 
+                                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200 font-bold' 
                                         : 'bg-white text-slate-500 border-slate-200'
                                     }`}>
                                         {isUserMatch && <CheckIcon className="w-3 h-3 mr-1.5" />}
@@ -232,17 +403,17 @@ export const IngredientGuide: React.FC<IngredientGuideProps> = ({ userProfile })
                             </div>
                             )}
 
-                            {/* Caution For */}
+                            {/* Caution For (General) */}
                             {ing.harmfulFor.length > 0 && (
                             <div>
-                                <p className="text-[10px] font-extrabold text-rose-500 uppercase mb-2 tracking-wide">{t('guide_caution', lang)}</p>
+                                <p className="text-[10px] font-extrabold text-slate-400 uppercase mb-2 tracking-wide">{t('cat_all', lang)}: {t('guide_caution', lang)}</p>
                                 <div className="flex flex-wrap gap-2">
                                 {ing.harmfulFor.map(cond => {
                                     const isUserMatch = userProfile.conditions.includes(cond);
                                     return (
                                     <span key={cond} className={`text-xs px-3 py-1.5 rounded-lg border flex items-center transition-all ${
                                         isUserMatch 
-                                        ? 'bg-rose-50 text-rose-700 border-rose-200 font-bold shadow-sm' 
+                                        ? 'bg-rose-50 text-rose-700 border-rose-200 font-bold' 
                                         : 'bg-white text-slate-500 border-slate-200'
                                     }`}>
                                         {isUserMatch && <AlertTriangleIcon className="w-3 h-3 mr-1.5" />}
@@ -283,19 +454,19 @@ export const IngredientGuide: React.FC<IngredientGuideProps> = ({ userProfile })
             )}
         </div>
       ) : (
-          /* Conditions Tab Content */
-          <div className="space-y-4 animate-fade-in">
+          /* Conditions Tab Content - Drill-down List */
+          <div className="space-y-4 animate-fade-in h-full overflow-y-auto">
               {HEALTH_CATEGORIES.map(category => {
                   const isOpen = expandedCategory === category.id;
                   
                   return (
-                      <div key={category.id} className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+                      <div key={category.id} className="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden">
                           <button 
                             onClick={() => toggleConditionCategory(category.id)}
                             className="w-full flex items-center justify-between p-5 bg-white hover:bg-slate-50 transition-colors"
                           >
                              <div className="flex items-center space-x-3">
-                                 <div className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center font-bold text-xs">
+                                 <div className="w-9 h-9 rounded-2xl bg-indigo-50 text-indigo-500 flex items-center justify-center font-bold text-sm shadow-sm">
                                      {category.name.charAt(0)}
                                  </div>
                                  <span className="font-bold text-slate-700 text-sm">{category.name.substring(3)}</span>
@@ -304,59 +475,32 @@ export const IngredientGuide: React.FC<IngredientGuideProps> = ({ userProfile })
                           </button>
                           
                           {isOpen && (
-                              <div className="px-5 pb-5">
+                              <div className="px-5 pb-5 animate-fade-in">
                                   {category.groups.map(group => (
                                       <div key={group.id} className="mt-4 first:mt-2">
-                                          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-2 pl-1">{group.name}</p>
-                                          <div className="space-y-2">
+                                          <p className="text-[10px] font-extrabold text-slate-400 uppercase tracking-widest mb-3 pl-1 flex items-center">
+                                              <span className="w-1.5 h-1.5 bg-slate-300 rounded-full mr-2"></span>
+                                              {group.name}
+                                          </p>
+                                          <div className="grid grid-cols-1 gap-2">
                                               {group.conditions.map(cond => {
-                                                  const detail = getDiseaseInfo(cond.id);
-                                                  const isExpanded = selectedDisease === cond.id;
-                                                  
+                                                  const isUserCondition = userProfile.conditions.includes(cond.id);
                                                   return (
-                                                      <div key={cond.id} className={`rounded-xl border transition-all ${isExpanded ? 'bg-indigo-50/50 border-indigo-100 ring-1 ring-indigo-50' : 'bg-slate-50 border-slate-50'}`}>
-                                                          <button 
-                                                            onClick={() => setSelectedDisease(isExpanded ? null : cond.id)}
-                                                            className="w-full text-left p-3 flex justify-between items-center"
-                                                          >
-                                                              <span className={`text-sm font-bold ${isExpanded ? 'text-indigo-700' : 'text-slate-600'}`}>{cond.name}</span>
-                                                              <InfoIcon className={`w-4 h-4 transition-colors ${isExpanded ? 'text-indigo-400' : 'text-slate-300'}`} />
-                                                          </button>
-                                                          
-                                                          {isExpanded && (
-                                                              <div className="px-4 pb-4 text-sm animate-fade-in">
-                                                                  {detail ? (
-                                                                      <div className="space-y-4 pt-2">
-                                                                          <div className="bg-white p-3 rounded-lg border border-indigo-100 shadow-sm">
-                                                                              <p className="text-[10px] font-extrabold text-indigo-500 uppercase mb-1 tracking-wide">{t('disease_overview', lang)}</p>
-                                                                              <p className="text-slate-700 leading-relaxed">{detail.overview[lang]}</p>
-                                                                          </div>
-                                                                          
-                                                                          <div className="grid grid-cols-1 gap-3">
-                                                                               <div className="bg-white p-3 rounded-lg border border-rose-100 shadow-sm">
-                                                                                   <p className="text-[10px] font-extrabold text-rose-500 uppercase mb-1 tracking-wide">{t('disease_severity', lang)}</p>
-                                                                                   <p className="text-slate-700 leading-relaxed">{detail.severity[lang]}</p>
-                                                                               </div>
-                                                                               
-                                                                               <div className="bg-white p-3 rounded-lg border border-emerald-100 shadow-sm">
-                                                                                   <p className="text-[10px] font-extrabold text-emerald-600 uppercase mb-1 tracking-wide">{t('disease_diet', lang)}</p>
-                                                                                   <p className="text-slate-700 leading-relaxed">{detail.dietaryHabits[lang]}</p>
-                                                                               </div>
-
-                                                                               <div className="bg-white p-3 rounded-lg border border-blue-100 shadow-sm">
-                                                                                   <p className="text-[10px] font-extrabold text-blue-500 uppercase mb-1 tracking-wide">{t('disease_advice', lang)}</p>
-                                                                                   <p className="text-slate-700 leading-relaxed">{detail.advice[lang]}</p>
-                                                                               </div>
-                                                                          </div>
-                                                                      </div>
-                                                                  ) : (
-                                                                      <div className="p-3 text-slate-400 italic text-center text-xs">
-                                                                          Detailed guide coming soon for this condition.
-                                                                      </div>
-                                                                  )}
-                                                              </div>
-                                                          )}
-                                                      </div>
+                                                      <button 
+                                                        key={cond.id}
+                                                        onClick={() => setSelectedDiseaseId(cond.id)}
+                                                        className={`w-full text-left p-4 rounded-2xl flex justify-between items-center transition-all border group ${isUserCondition ? 'bg-indigo-50/30 border-indigo-100' : 'bg-slate-50 border-transparent hover:bg-slate-100'}`}
+                                                      >
+                                                          <div className="flex items-center">
+                                                              <span className={`text-sm font-bold ${isUserCondition ? 'text-indigo-700' : 'text-slate-600'}`}>{cond.name}</span>
+                                                              {isUserCondition && (
+                                                                  <span className="ml-2 bg-indigo-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold uppercase tracking-widest">Mine</span>
+                                                              )}
+                                                          </div>
+                                                          <div className="p-1 bg-white rounded-lg shadow-sm group-hover:bg-indigo-500 group-hover:text-white transition-colors">
+                                                              <ChevronRightIcon className="w-4 h-4 opacity-70" />
+                                                          </div>
+                                                      </button>
                                                   )
                                               })}
                                           </div>

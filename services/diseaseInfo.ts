@@ -1,3 +1,4 @@
+
 import { DiseaseInfo } from '../types';
 
 export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
@@ -40,6 +41,25 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
       zh: "每周进行至少150分钟的中等强度运动。定期监测血糖。每天检查足部是否有伤口。保持健康体重。"
     }
   },
+  'diabetes_gestational': {
+    id: 'diabetes_gestational',
+    overview: {
+      en: "Gestational diabetes occurs during pregnancy when hormonal changes cause insulin resistance. It usually resolves after birth but increases Type 2 risk later.",
+      zh: "妊娠糖尿病发生在怀孕期间，激素变化导致胰岛素抵抗。通常在分娩后消失，但会增加日后患2型糖尿病的风险。"
+    },
+    severity: {
+      en: "Can cause high birth weight (macrosomia), preterm birth, and respiratory issues for the baby, plus preeclampsia for the mother.",
+      zh: "可能导致巨大儿、早产和婴儿呼吸问题，以及母亲的先兆子痫。"
+    },
+    dietaryHabits: {
+      en: "Distribute carbohydrates evenly across 3 meals and 2-3 snacks to avoid spikes. Pair carbs with protein/fat.",
+      zh: "将碳水化合物均匀分配到3顿正餐和2-3顿加餐中，以避免血糖峰值。将碳水与蛋白质/脂肪搭配食用。"
+    },
+    advice: {
+      en: "Monitor blood sugar 4 times daily (fasting and post-meals). Moderate exercise (walking) after meals helps lower blood sugar.",
+      zh: "每天监测4次血糖（空腹和饭后）。饭后适度运动（散步）有助于降低血糖。"
+    }
+  },
   'prediabetes': {
     id: 'prediabetes',
     overview: {
@@ -57,6 +77,25 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
     advice: {
       en: "Losing just 5-7% of body weight can prevent or delay diabetes. Exercise 30 minutes a day, 5 days a week.",
       zh: "只需减轻5-7%的体重即可预防或延缓糖尿病。每周5天，每天运动30分钟。"
+    }
+  },
+  'metabolic_syndrome': {
+    id: 'metabolic_syndrome',
+    overview: {
+      en: "A cluster of conditions occurring together: high blood pressure, high blood sugar, excess body fat around the waist, and abnormal cholesterol levels.",
+      zh: "一组同时发生的病症：高血压、高血糖、腰部脂肪堆积和胆固醇水平异常。"
+    },
+    severity: {
+      en: "Increases risk of heart disease, stroke, and diabetes. It indicates underlying insulin resistance and inflammation.",
+      zh: "增加心脏病、中风和糖尿病的风险。它表明潜在的胰岛素抵抗和炎症。"
+    },
+    dietaryHabits: {
+      en: "Adopt a Mediterranean diet. Focus on plant-based foods, healthy fats (olive oil), and high fiber.",
+      zh: "采取地中海饮食。专注于植物性食物、健康脂肪（橄榄油）和高纤维。"
+    },
+    advice: {
+      en: "Waist circumference is a key metric (>40in men, >35in women). Prioritize sleep and stress reduction.",
+      zh: "腰围是一个关键指标（男性>40英寸，女性>35英寸）。优先考虑睡眠和减压。"
     }
   },
 
@@ -99,6 +138,25 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
       zh: "有氧运动有助于提高HDL（好）胆固醇。减肥和戒烟至关重要。"
     }
   },
+  'high_triglycerides': {
+    id: 'high_triglycerides',
+    overview: {
+      en: "Triglycerides are a type of fat (lipid) found in your blood. High levels often accompany high blood sugar and low HDL.",
+      zh: "甘油三酯是血液中的一种脂肪（脂质）。高水平通常伴随着高血糖和低HDL。"
+    },
+    severity: {
+      en: "Very high levels can cause acute pancreatitis. Contributes to hardening of arteries and heart disease.",
+      zh: "极高水平会导致急性胰腺炎。促使动脉硬化和心脏病。"
+    },
+    dietaryHabits: {
+      en: "Avoid sugary foods and refined carbohydrates. Limit alcohol strictly as it rapidly spikes triglycerides.",
+      zh: "避免含糖食物和精制碳水化合物。严格限制酒精，因为它会迅速升高甘油三酯。"
+    },
+    advice: {
+      en: "Lose weight if needed. Eat fatty fish (omega-3) twice a week.",
+      zh: "如果需要，请减肥。每周吃两次富含脂肪的鱼（omega-3）。"
+    }
+  },
   'cad': {
     id: 'cad',
     overview: {
@@ -139,6 +197,25 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
   },
 
   // C. Kidney
+  'ckd_1_2': {
+    id: 'ckd_1_2',
+    overview: {
+      en: "Early stage Chronic Kidney Disease. Mild kidney damage with normal or slightly reduced function (GFR > 60). Often asymptomatic.",
+      zh: "早期慢性肾病。轻度肾损伤，功能正常或轻微下降（GFR > 60）。通常无症状。"
+    },
+    severity: {
+      en: "Goal is to prevent progression. With care, kidneys can function well for a lifetime.",
+      zh: "目标是预防进展。通过护理，肾脏可以终生良好运作。"
+    },
+    dietaryHabits: {
+      en: "Manage blood pressure and blood sugar strictly. Moderate protein intake (don't overload). Restrict salt.",
+      zh: "严格管理血压和血糖。适度摄入蛋白质（不要过量）。限制盐分。"
+    },
+    advice: {
+      en: "Annual testing of urine (albumin) and blood (creatinine). Stay hydrated unless restricted.",
+      zh: "每年进行尿液（白蛋白）和血液（肌酐）检测。除非受限，否则保持水分充足。"
+    }
+  },
   'ckd_3_5': {
     id: 'ckd_3_5',
     overview: {
@@ -177,6 +254,25 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
       zh: "检查食品标签中是否有氯化钾（代盐）。严格遵守处方饮食。"
     }
   },
+  'hyperphosphatemia': {
+    id: 'hyperphosphatemia',
+    overview: {
+      en: "High levels of phosphorus in the blood, common in later stages of CKD.",
+      zh: "血液中磷含量过高，常见于慢性肾病晚期。"
+    },
+    severity: {
+      en: "Causes calcium to be pulled from bones, making them weak. Leads to calcification of blood vessels and heart issues.",
+      zh: "导致钙从骨骼中流失，使其变弱。导致血管钙化和心脏问题。"
+    },
+    dietaryHabits: {
+      en: "Limit dairy, nuts, seeds, beans, and processed foods with phosphate additives (look for 'phos' on labels).",
+      zh: "限制乳制品、坚果、种子、豆类以及含有磷酸盐添加剂的加工食品（查看标签上的“磷”）。"
+    },
+    advice: {
+      en: "Take phosphate binders with meals if prescribed. Avoid dark colas.",
+      zh: "如果开了处方，请随餐服用磷结合剂。避免深色可乐。"
+    }
+  },
 
   // D. Gout
   'gout': {
@@ -196,6 +292,25 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
     advice: {
       en: "Drink plenty of water (8-12 cups/day) to flush uric acid. Avoid rapid weight loss as it can trigger attacks. Limit alcohol, especially beer.",
       zh: "每天喝大量水（8-12杯）以排出尿酸。避免快速减肥，因为这可能诱发发作。限制酒精，尤其是啤酒。"
+    }
+  },
+  'hyperuricemia': {
+    id: 'hyperuricemia',
+    overview: {
+      en: "High uric acid in the blood without symptoms (yet). It is the precursor to gout.",
+      zh: "血液中尿酸过高但（暂）无症状。它是痛风的前兆。"
+    },
+    severity: {
+      en: "Increases risk of developing gout, kidney stones, and is linked to hypertension and cardiovascular disease.",
+      zh: "增加患痛风、肾结石的风险，并与高血压和心血管疾病有关。"
+    },
+    dietaryHabits: {
+      en: "Reduce intake of purine-rich foods (red meat, shellfish). Avoid High Fructose Corn Syrup.",
+      zh: "减少富含嘌呤食物（红肉、贝类）的摄入。避免高果葡糖浆。"
+    },
+    advice: {
+      en: "Hydration is the simplest and most effective treatment. Limit alcohol.",
+      zh: "补充水分是最简单有效的治疗方法。限制酒精。"
     }
   },
 
@@ -219,6 +334,63 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
       zh: "逐渐减轻体重（体重的7-10%）有助于逆转脂肪堆积。优先进行力量训练以提高胰岛素敏感性。"
     }
   },
+  'fatty_liver_afld': {
+    id: 'fatty_liver_afld',
+    overview: {
+      en: "Alcoholic Fatty Liver Disease is the earliest stage of alcohol-related liver disease. It occurs when the liver breaks down alcohol, generating toxic substances.",
+      zh: "酒精性脂肪肝是酒精相关肝病的早期阶段。它发生在肝脏分解酒精产生有毒物质时。"
+    },
+    severity: {
+      en: "Reversible if alcohol is stopped. If drinking continues, it leads to alcoholic hepatitis and cirrhosis.",
+      zh: "如果停止饮酒，是可逆的。如果继续饮酒，会导致酒精性肝炎和肝硬化。"
+    },
+    dietaryHabits: {
+      en: "Strict abstinence from alcohol. High protein diet to aid liver regeneration.",
+      zh: "严格戒酒。高蛋白饮食有助于肝脏再生。"
+    },
+    advice: {
+      en: "Supplements like Vitamin B1 (Thiamine) are often needed. Seek support for cessation.",
+      zh: "通常需要补充维生素B1（硫胺素）。寻求戒酒支持。"
+    }
+  },
+  'gallstones': {
+    id: 'gallstones',
+    overview: {
+      en: "Hardened deposits of digestive fluid (bile) that can form in your gallbladder.",
+      zh: "消化液（胆汁）硬化形成的沉积物，可能在胆囊中形成。"
+    },
+    severity: {
+      en: "Can block bile ducts causing intense pain (biliary colic), infection, or pancreatitis.",
+      zh: "可能阻塞胆管，引起剧烈疼痛（胆绞痛）、感染或胰腺炎。"
+    },
+    dietaryHabits: {
+      en: "Eat a low-fat, high-fiber diet. Avoid rapid weight loss. Avoid fatty/fried meals which trigger contractions.",
+      zh: "采取低脂、高纤维饮食。避免快速减肥。避免高脂/油炸餐，这会诱发收缩。"
+    },
+    advice: {
+      en: "Eat smaller, more frequent meals. Healthy fats like olive oil in moderation are okay.",
+      zh: "少食多餐。适量食用橄榄油等健康脂肪是可以的。"
+    }
+  },
+  'pancreatitis_chronic': {
+    id: 'pancreatitis_chronic',
+    overview: {
+      en: "Long-standing inflammation of the pancreas that alters the organ's normal structure and functions.",
+      zh: "胰腺的长期炎症，改变了器官的正常结构和功能。"
+    },
+    severity: {
+      en: "Leads to permanent damage, loss of digestive enzymes (malabsorption), and diabetes.",
+      zh: "导致永久性损伤、消化酶缺失（吸收不良）和糖尿病。"
+    },
+    dietaryHabits: {
+      en: "Very low-fat diet (<50g/day). Small, frequent meals. Avoid alcohol and smoking entirely.",
+      zh: "极低脂饮食（<50克/天）。少食多餐。完全避免酒精和吸烟。"
+    },
+    advice: {
+      en: "May require pancreatic enzyme replacement therapy (PERT) with meals. Stay hydrated.",
+      zh: "可能需要随餐进行胰酶替代疗法（PERT）。保持水分充足。"
+    }
+  },
 
   // F. GI
   'gerd': {
@@ -238,6 +410,25 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
     advice: {
       en: "Do not eat within 3 hours of bedtime. Elevate the head of your bed. Losing weight can significantly reduce pressure on the stomach.",
       zh: "睡前3小时内不要进食。抬高床头。减肥可以显著减少对胃的压力。"
+    }
+  },
+  'gastritis': {
+    id: 'gastritis',
+    overview: {
+      en: "Inflammation of the protective lining of the stomach.",
+      zh: "胃部保护性内膜的炎症。"
+    },
+    severity: {
+      en: "Can lead to ulcers and increased risk of stomach cancer if untreated (especially if H. pylori related).",
+      zh: "如果不治疗（特别是与幽门螺杆菌相关时），可能导致溃疡并增加胃癌风险。"
+    },
+    dietaryHabits: {
+      en: "Avoid irritants: alcohol, caffeine, spicy foods, acidic foods (citrus/tomato). Eat bland, cooked foods.",
+      zh: "避免刺激物：酒精、咖啡因、辛辣食物、酸性食物（柑橘/番茄）。吃清淡、煮熟的食物。"
+    },
+    advice: {
+      en: "Manage stress. Avoid NSAID pain relievers. Probiotics may help.",
+      zh: "管理压力。避免服用非甾体抗炎止痛药。益生菌可能有帮助。"
     }
   },
   'ibs': {
@@ -279,6 +470,65 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
     }
   },
 
+  // G. Allergies
+  'allergy_nut': {
+    id: 'allergy_nut',
+    overview: {
+      en: "Immune system reaction to tree nuts (almonds, walnuts, cashews, etc.) or peanuts.",
+      zh: "免疫系统对树坚果（杏仁、核桃、腰果等）或花生的反应。"
+    },
+    severity: {
+      en: "Can range from mild itching to anaphylaxis, a potentially life-threatening reaction causing breathing difficulties and shock.",
+      zh: "范围从轻微瘙痒到过敏性休克，这是一种可能危及生命的反应，会导致呼吸困难和休克。"
+    },
+    dietaryHabits: {
+      en: "Strict avoidance. Read labels for 'May contain traces'. Be wary of cross-contamination in bakeries and Asian cuisine.",
+      zh: "严格避免。阅读标签上的“可能含有微量”。警惕面包店和亚洲菜肴中的交叉污染。"
+    },
+    advice: {
+      en: "Carry an EpiPen at all times. Teach friends/family how to use it.",
+      zh: "随身携带EpiPen。教朋友/家人如何使用。"
+    }
+  },
+  'allergy_seafood': {
+    id: 'allergy_seafood',
+    overview: {
+      en: "Allergy to fish (tuna, salmon) or shellfish (shrimp, lobster, crab). These are distinct allergies but often grouped.",
+      zh: "对鱼类（金枪鱼、三文鱼）或贝类（虾、龙虾、蟹）过敏。这些是不同的过敏，但通常被归为一类。"
+    },
+    severity: {
+      en: "A common cause of anaphylaxis in adults. Unlike childhood allergies, it is rarely outgrown.",
+      zh: "成人过敏性休克的常见原因。与儿童过敏不同，它很少会随年龄增长而消失。"
+    },
+    dietaryHabits: {
+      en: "Avoid all seafood types you react to. Watch for fish sauce in Asian dishes and Caesar salad dressing.",
+      zh: "避免所有引起反应的海鲜。注意亚洲菜肴中的鱼露和凯撒沙拉酱。"
+    },
+    advice: {
+      en: "Be careful with frying oil in restaurants (cross-contamination). Carry emergency medication.",
+      zh: "小心餐馆的油炸用油（交叉污染）。携带急救药物。"
+    }
+  },
+  'lactose_intolerance': {
+    id: 'lactose_intolerance',
+    overview: {
+      en: "Inability to digest lactose, the sugar found in milk, due to a deficiency of the enzyme lactase.",
+      zh: "由于缺乏乳糖酶，无法消化牛奶中的糖分——乳糖。"
+    },
+    severity: {
+      en: "Causes uncomfortable digestive symptoms (bloating, gas, diarrhea) but is not dangerous or damaging to the gut.",
+      zh: "引起不适的消化症状（腹胀、胀气、腹泻），但不危险，也不会损伤肠道。"
+    },
+    dietaryHabits: {
+      en: "Use lactose-free dairy milk or plant milks. Aged cheeses and yogurt are often tolerated due to lower lactose.",
+      zh: "使用无乳糖牛奶或植物奶。陈年奶酪和酸奶因乳糖含量较低，通常可以耐受。"
+    },
+    advice: {
+      en: "Lactase enzyme supplements can be taken before eating dairy.",
+      zh: "在食用乳制品前可以服用乳糖酶补充剂。"
+    }
+  },
+
   // H. Special
   'pregnancy': {
     id: 'pregnancy',
@@ -299,8 +549,27 @@ export const DISEASE_INFO_DB: Record<string, DiseaseInfo> = {
       zh: "服用产前维生素。保持水分充足。少食多餐以控制恶心和胃灼热。"
     }
   },
+  'toddler': {
+    id: 'toddler',
+    overview: {
+      en: "Rapid growth phase (ages 1-3) requiring high nutrient density. Picky eating is common.",
+      zh: "快速生长阶段（1-3岁），需要高营养密度。挑食很常见。"
+    },
+    severity: {
+      en: "Choking hazards are a major risk. Iron deficiency anemia is common if milk intake displaces solid food.",
+      zh: "窒息是一个主要风险。如果牛奶摄入取代了固体食物，缺铁性贫血很常见。"
+    },
+    dietaryHabits: {
+      en: "Offer a variety of textures and colors. Avoid added sugars and excess salt. Cut round foods (grapes, hot dogs) to prevent choking.",
+      zh: "提供多种质地和颜色。避免添加糖和过量的盐。切开圆形食物（葡萄、热狗）以防窒息。"
+    },
+    advice: {
+      en: "Limit milk to 2-3 cups/day. Do not force feed; keep mealtimes positive.",
+      zh: "限制牛奶每天2-3杯。不要强迫喂食；保持进餐时间愉快。"
+    }
+  },
 
-  // I. Neurological (NEW)
+  // I. Neurological
   'alzheimers': {
     id: 'alzheimers',
     overview: {
